@@ -96,6 +96,13 @@ function CompaniesContent() {
     setHotListOnly(false)
   }
 
+  // Keep the Hot List count and filter honest after a card toggles membership
+  function handleHotListChange(id: string, onHotList: boolean) {
+    setCompanies((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, fields: { ...c.fields, 'On Hot List': onHotList } } : c))
+    )
+  }
+
   const hotListCount = companies.filter((c) => c.fields['On Hot List']).length
 
   if (loading) return <PageLoader message="Loading companies…" />
@@ -245,7 +252,7 @@ function CompaniesContent() {
         <>
           <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {paginated.map((company) => (
-              <CompanyCard key={company.id} company={company} />
+              <CompanyCard key={company.id} company={company} onHotListChange={handleHotListChange} />
             ))}
           </div>
 

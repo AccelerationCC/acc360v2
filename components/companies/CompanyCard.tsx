@@ -1,15 +1,23 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { MapPin, User, DollarSign, Globe, GitCompare, ExternalLink, Flame } from 'lucide-react'
 import { cn, getCompanyName, getInitials, getAvatarColor, getPhaseStyle, formatRevenue, extractUrl } from '@/lib/utils'
 import { useApp } from '@/contexts/AppContext'
+import { useAdmin } from '@/lib/hooks/useAdmin'
+import { HotListToggle } from '@/components/companies/HotListToggle'
 import { Company } from '@/types'
 
-interface CompanyCardProps { company: Company }
+interface CompanyCardProps {
+  company: Company
+  /** Lets the parent list keep its own copy in sync when Hot List membership flips. */
+  onHotListChange?: (id: string, onHotList: boolean) => void
+}
 
-export function CompanyCard({ company }: CompanyCardProps) {
+export function CompanyCard({ company, onHotListChange }: CompanyCardProps) {
   const { toggleCompare, isSelectedForCompare, compareIds } = useApp()
+  const { isAdmin } = useAdmin()
   const selected    = isSelectedForCompare(company.id)
   const canCompare  = compareIds.length < 3 || selected
 
@@ -26,7 +34,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
   const revenue  = f['Revenue (MM)']
   const websiteRaw = f['Website'] as string | undefined
   const website    = extractUrl(websiteRaw)
-  const onHotList  = f['On Hot List'] as boolean | undefined
+  const [onHotList, setOnHotList] = useState(Boolean(f['On Hot List']))
 
   const domain = website
     ? (() => { try { const u = website.startsWith('http') ? website : `https://${website}`; return new URL(u).hostname.replace(/^www\./, '') } catch { return null } })()
@@ -137,6 +145,18 @@ export function CompanyCard({ company }: CompanyCardProps) {
             <GitCompare size={12} />
             {selected ? 'Remove' : 'Compare'}
           </button>
+          {isAdmin && (
+            <HotListToggle
+              companyId={company.id}
+              companyName={name}
+              onHotList={onHotList}
+              onChange={(next) => {
+                setOnHotList(next)
+                onHotListChange?.(company.id, next)
+              }}
+              variant="icon"
+            />
+          )}
         </div>
       </div>
     </div>

@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { Edit2, Trash2, GitCompare, Globe, Mail, MapPin, User, DollarSign, FileText } from 'lucide-react'
+import { Edit2, Trash2, GitCompare, Globe, Mail, MapPin, User, DollarSign, FileText, Flame } from 'lucide-react'
 import { Company } from '@/types'
 import { getCompanyName, getInitials, getAvatarColor, getPhaseStyle, formatRevenue, extractUrl } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { PageLoader } from '@/components/ui/LoadingSpinner'
 import { DeleteModal } from '@/components/companies/DeleteModal'
+import { HotListToggle } from '@/components/companies/HotListToggle'
 import { Newsroom } from '@/components/companies/Newsroom'
 import { useApp } from '@/contexts/AppContext'
 import { useAdmin } from '@/lib/hooks/useAdmin'
@@ -60,6 +61,7 @@ export default function CompanyProfilePage() {
   const ltmRevenue = f["LTM Revenue '25"] as string | undefined
   const ebitda     = f["EBITDA '25"] as string | undefined
   const forecast   = f['Forecast Revenue / EBITDA'] as string | undefined
+  const onHotList      = Boolean(f['On Hot List'])
   const officesHotList = f['Offices (Hot List)'] as string | undefined
   const notes      = f['Notes'] as string | undefined
 
@@ -94,6 +96,12 @@ export default function CompanyProfilePage() {
                     {phase}
                   </span>
                 )}
+                {onHotList && (
+                  <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full border bg-orange-500/15 text-orange-400 border-orange-500/25">
+                    <Flame size={11} />
+                    Hot List
+                  </span>
+                )}
               </div>
               {vertical && <p className="text-sm text-accent-teal">{vertical}</p>}
               {company.createdTime && (
@@ -117,6 +125,14 @@ export default function CompanyProfilePage() {
               </button>
               {isAdmin && (
                 <>
+                  <HotListToggle
+                    companyId={company.id}
+                    companyName={name}
+                    onHotList={onHotList}
+                    onChange={(next) =>
+                      setCompany((c) => (c ? { ...c, fields: { ...c.fields, 'On Hot List': next } } : c))
+                    }
+                  />
                   <Link href={`/companies/${company.id}/edit`} className="flex-1 sm:flex-none">
                     <Button size="sm" variant="secondary" icon={<Edit2 size={13} />} className="w-full sm:w-auto justify-center">Edit</Button>
                   </Link>

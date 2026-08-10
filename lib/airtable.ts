@@ -97,3 +97,15 @@ export async function updateCompany(
 export async function deleteCompany(id: string): Promise<void> {
   await getBase()(TABLE()).destroy(id)
 }
+
+/** Airtable checkbox field that drives the Hot List filter and the daily brief. */
+export const HOT_LIST_FIELD = 'On Hot List'
+
+/**
+ * Flip a company's Hot List membership without touching any other field.
+ * Deliberately narrow: unlike the full edit form this never resends the rest of
+ * the record, so it can't trip over computed (formula/rollup/lookup) fields.
+ */
+export async function setHotList(id: string, onHotList: boolean): Promise<Company> {
+  return updateCompany(id, { [HOT_LIST_FIELD]: onHotList })
+}
