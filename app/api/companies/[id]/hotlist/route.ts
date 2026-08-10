@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { setHotList } from '@/lib/airtable'
+import { setHotList, airtableError } from '@/lib/airtable'
 import { requireAdmin } from '@/lib/adminGuard'
 
 interface Params { params: { id: string } }
@@ -21,7 +21,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const company = await setHotList(params.id, onHotList)
     return NextResponse.json(company)
   } catch (err) {
-    console.error('[PATCH /api/companies/:id/hotlist]', err)
-    return NextResponse.json({ error: 'Failed to update Hot List', details: String(err) }, { status: 500 })
+    const { type, message, status } = airtableError(err)
+    console.error('[PATCH /api/companies/:id/hotlist]', type, message)
+    return NextResponse.json(
+      { error: 'Failed to update Hot List', airtableError: type, details: message },
+      { status },
+    )
   }
 }

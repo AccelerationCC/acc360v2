@@ -36,6 +36,7 @@ export function CompanyForm({ company }: CompanyFormProps) {
   const isEditing = !!company
 
   const [schema, setSchema] = useState<FieldSchema[]>([])
+  const [readOnlyFields, setReadOnlyFields] = useState<FieldSchema[]>([])
   const [values, setValues] = useState<FormValues>({})
   const [loadingSchema, setLoadingSchema] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -44,9 +45,12 @@ export function CompanyForm({ company }: CompanyFormProps) {
     fetch('/api/airtable/schema')
       .then((r) => r.json())
       .then((fields: FieldSchema[]) => {
-        // Exclude read-only linked fields from the form
-        const editable = fields.filter((f) => f.type !== 'linked')
+        // Computed fields (formula, rollup, lookup, count, createdTime…) and
+        // linked records can't be written. Airtable rejects the entire record
+        // if they appear in the payload, so they never enter the form.
+        const editable = fields.filter((f) => !f.readOnly && f.type !== 'linked')
         setSchema(editable)
+        setReadOnlyFields(fields.filter((f) => f.readOnly || f.type === 'linked'))
         const initial: FormValues = {}
         editable.forEach((f) => {
           initial[f.name] = isEditing ? valueToString(company.fields[f.name]) : ''
@@ -68,7 +72,10 @@ export function CompanyForm({ company }: CompanyFormProps) {
     const fields: Record<string, AirtableFieldValue> = {}
     schema.forEach((f) => {
       const coerced = stringToAirtableValue(values[f.name] ?? '', f.type)
+      // On edit, an emptied field is sent as null so Airtable actually clears
+      // it. On create, empties are simply omitted.
       if (coerced !== null) fields[f.name] = coerced
+      else if (isEditing && valueToString(company.fields[f.name]) !== '') fields[f.name] = null
     })
 
     try {
@@ -80,15 +87,17 @@ export function CompanyForm({ company }: CompanyFormProps) {
         body: JSON.stringify(fields),
       })
       if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error ?? 'Request failed')
+        const err = await res.json().catch(() => ({}))
+        // details carries the real Airtable message (e.g. "Field X is computed",
+        // "insufficient permissions"); error alone is just a generic label.
+        throw new Error(err.details ?? err.error ?? `Request failed (${res.status})`)
       }
       const saved: Company = await res.json()
       toast.success(isEditing ? 'Company updated!' : 'Company created!')
       router.push(`/companies/${saved.id}`)
       router.refresh()
     } catch (err) {
-      toast.error(String(err))
+      toast.error(err instanceof Error ? err.message : String(err))
     } finally {
       setSubmitting(false)
     }
@@ -159,6 +168,17 @@ export function CompanyForm({ company }: CompanyFormProps) {
           />
         )
       })}
+
+      {readOnlyFields.length > 0 && (
+        <div className="pt-2 border-t border-border">
+          <p className="text-xs text-muted">
+            Computed in Airtable, not editable here:{' '}
+            <span className="text-light">
+              {readOnlyFields.map((f) => f.name).join(', ')}
+            </span>
+          </p>
+        </div>
+      )}
 
       <div className="flex items-center gap-3 pt-2">
         <Button type="submit" loading={submitting}>

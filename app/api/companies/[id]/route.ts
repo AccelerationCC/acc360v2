@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { getCompany, updateCompany, deleteCompany } from '@/lib/airtable'
+import { getCompany, updateCompany, deleteCompany, airtableError } from '@/lib/airtable'
 import { requireAdmin } from '@/lib/adminGuard'
 
 interface Params { params: { id: string } }
@@ -27,8 +27,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const company = await updateCompany(params.id, fields)
     return NextResponse.json(company)
   } catch (err) {
-    console.error('[PATCH /api/companies/:id]', err)
-    return NextResponse.json({ error: 'Failed to update company', details: String(err) }, { status: 500 })
+    const { type, message, status } = airtableError(err)
+    console.error('[PATCH /api/companies/:id]', type, message)
+    return NextResponse.json(
+      { error: 'Failed to update company', airtableError: type, details: message },
+      { status },
+    )
   }
 }
 
