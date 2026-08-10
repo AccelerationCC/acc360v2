@@ -117,7 +117,8 @@ User → Next.js App
 | Browse companies | Left sidebar or Companies page |
 | Add a company | "Add Company" button or `/companies/new` |
 | Edit a company | Company profile → Edit button |
-| Delete a company | Company profile → Delete button |
+| Add/remove from Hot List | Flame button on any company card, or the button on the company profile — the record stays on the target list |
+| Delete a company | Company profile → Delete button (permanent — removes it from Airtable entirely) |
 | Compare companies | Click "Compare" on cards, then "Compare Now" |
 
 ---

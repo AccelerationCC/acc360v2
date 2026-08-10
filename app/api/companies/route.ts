@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { getAllCompanies, createCompany } from '@/lib/airtable'
+import { getAllCompanies, createCompany, airtableError } from '@/lib/airtable'
 import { requireAdmin } from '@/lib/adminGuard'
 
 export async function GET() {
@@ -43,10 +43,11 @@ export async function POST(req: NextRequest) {
     const company = await createCompany(fields)
     return NextResponse.json(company, { status: 201 })
   } catch (err) {
-    console.error('[POST /api/companies]', err)
+    const { type, message, status } = airtableError(err)
+    console.error('[POST /api/companies]', type, message)
     return NextResponse.json(
-      { error: 'Failed to create company', details: String(err) },
-      { status: 500 }
+      { error: 'Failed to create company', airtableError: type, details: message },
+      { status }
     )
   }
 }
