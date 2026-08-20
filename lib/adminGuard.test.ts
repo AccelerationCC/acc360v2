@@ -39,9 +39,9 @@ afterEach(() => {
 })
 
 describe('requireAdmin', () => {
-  it('lets "admin" through — returns null, meaning "no objection"', async () => {
+  it('lets "superexec" through — returns null, meaning "no objection"', async () => {
     const { requireAdmin } = await import('./adminGuard')
-    signedInAs('admin')
+    signedInAs('superexec')
     await expect(requireAdmin()).resolves.toBeNull()
   })
 
@@ -65,7 +65,7 @@ describe('requireAdmin', () => {
   })
 
   // THE PIN. "exec" is the 360-access role; managing companies is the one
-  // privilege that separates "admin" from "exec". If this test ever fails
+  // privilege that separates "superexec" from "exec". If this test ever fails
   // because the predicate was widened to accept "exec", that widening is the
   // bug — it erases the only difference between the two roles. See the role
   // model at the top of adminGuard.ts.
@@ -79,7 +79,7 @@ describe('requireAdmin', () => {
 
   it('403s "hr" and any unrecognised role', async () => {
     const { requireAdmin } = await import('./adminGuard')
-    for (const role of ['hr', 'viewer', 'Admin', 'ADMIN']) {
+    for (const role of ['hr', 'viewer', 'Superexec', 'SUPEREXEC']) {
       signedInAs(role)
       const res = await requireAdmin()
       expect(res, `role ${role} must not clear the guard`).not.toBeNull()

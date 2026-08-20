@@ -4,7 +4,7 @@ import { CompanyForm } from '@/components/companies/CompanyForm'
 
 export default async function NewCompanyPage() {
   const user = await currentUser()
-  if (!user || user.publicMetadata?.role !== 'admin') {
+  if (!user || user.publicMetadata?.role !== 'superexec') {
     redirect('/companies')
   }
 

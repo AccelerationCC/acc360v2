@@ -48,9 +48,9 @@ describe('requireExec', () => {
     await expect(requireExec()).resolves.toBeNull()
   })
 
-  it('lets "admin" through — admin is an exec-tier role', async () => {
+  it('lets "superexec" through — admin is an exec-tier role', async () => {
     const { requireExec } = await import('./execGuard')
-    signedInAs('admin')
+    signedInAs('superexec')
     await expect(requireExec()).resolves.toBeNull()
   })
 
@@ -144,7 +144,7 @@ describe('POST /api/invitations — the three steps, in order', () => {
   it('an exec invites, and Clerk is asked for role "exec" only', async () => {
     const { POST } = await import('@/app/api/invitations/route')
     signedInAs('exec', 'user_exec')
-    const res = await POST(inviteRequest({ emails: ['new@example.com'], role: 'admin' }))
+    const res = await POST(inviteRequest({ emails: ['new@example.com'], role: 'superexec' }))
     expect(res.status).toBe(200)
     await expect(res.json()).resolves.toMatchObject({ sent: 1, failed: 0, roleGranted: 'exec' })
     expect(createInvitation).toHaveBeenCalledWith({
@@ -160,8 +160,8 @@ describe('POST /api/invitations — the three steps, in order', () => {
 
   it('an admin can invite too, and still only grants "exec"', async () => {
     const { POST } = await import('@/app/api/invitations/route')
-    signedInAs('admin', 'user_scott')
-    const res = await POST(inviteRequest({ emails: ['new@example.com'], role: 'admin' }))
+    signedInAs('superexec', 'user_scott')
+    const res = await POST(inviteRequest({ emails: ['new@example.com'], role: 'superexec' }))
     expect(res.status).toBe(200)
     expect(createInvitation).toHaveBeenCalledWith(
       expect.objectContaining({ publicMetadata: { role: 'exec' } }),

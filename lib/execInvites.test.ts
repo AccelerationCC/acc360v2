@@ -34,8 +34,8 @@ function deps(invitations: ReturnType<typeof fakeInvitations>, over: Record<stri
 }
 
 // ============================================================================
-// THE PIN. requireExec admits "exec" AND "admin", so if the granted role came
-// from the request body an exec could POST {"role":"admin"} and mint a second
+// THE PIN. requireExec admits "exec" AND "superexec", so if the granted role came
+// from the request body an exec could POST {"role":"superexec"} and mint a second
 // admin — handing themselves the company-management privilege that is the only
 // thing separating the two roles. The role is a module constant instead.
 // ============================================================================
@@ -48,18 +48,18 @@ describe('the invited role is server-side and cannot be influenced by input', ()
     ])
   })
 
-  it('never grants "admin", whatever the caller sends', async () => {
-    for (const smuggled of ['admin', 'ADMIN', ['admin'], { role: 'admin' }, null, 0, true]) {
+  it('never grants "superexec", whatever the caller sends', async () => {
+    for (const smuggled of ['superexec', 'SUPEREXEC', ['superexec'], { role: 'superexec' }, null, 0, true]) {
       const parsed = parseInviteEmails({ emails: ['jane@example.com'], role: smuggled })
       expect(parsed).toEqual({ ok: true, emails: ['jane@example.com'] })
-      expect(JSON.stringify(parsed)).not.toContain('admin')
+      expect(JSON.stringify(parsed)).not.toContain('superexec')
 
       const invitations = fakeInvitations()
       if (!parsed.ok) continue
       await createExecInvitations(parsed.emails, deps(invitations))
       for (const p of invitations.calls) {
         expect(p.publicMetadata).toEqual({ role: 'exec' })
-        expect(p.publicMetadata.role).not.toBe('admin')
+        expect(p.publicMetadata.role).not.toBe('superexec')
       }
     }
   })

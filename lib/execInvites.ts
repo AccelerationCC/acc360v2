@@ -12,8 +12,8 @@
  * The only role this endpoint can ever grant.
  *
  * Hardcoded, never a request field. The gate (requireExec) admits both "exec"
- * and "admin", so if the role travelled in the body an exec could POST
- * {"role":"admin"} and mint a second admin — granting themselves, by proxy,
+ * and "superexec", so if the role travelled in the body an exec could POST
+ * {"role":"superexec"} and mint a second admin — granting themselves, by proxy,
  * the company-management privilege that is the ONLY thing separating the two
  * roles. Creating another admin stays a manual Clerk-dashboard action.
  *

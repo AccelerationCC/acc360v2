@@ -12,7 +12,7 @@ import { recordInviteAudit } from '@/lib/inviteAudit'
 /**
  * Self-service exec invitations — /api/invitations.
  *
- * Gated on role "exec" OR "admin" (requireExec): an exec can invite another
+ * Gated on role "exec" OR "superexec" (requireExec): an exec can invite another
  * exec, and an admin can too, since admin is an exec-tier role. What keeps
  * that safe is that the granted role is a server-side constant — this endpoint
  * can only ever grant "exec", so nobody can mint a second admin through it.
