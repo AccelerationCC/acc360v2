@@ -5,10 +5,10 @@ import { NextResponse } from 'next/server'
  * Server-side exec guard for API route handlers — the mirror of requireAdmin
  * (lib/adminGuard.ts), one tier down.
  *
- * Clears for "exec" AND "admin": admin is an exec-tier role with the extra
- * company-management privilege (see the role model at the top of
- * adminGuard.ts), so anything an exec may do, an admin may do too. That is the
- * one direction the two roles overlap.
+ * Clears for "exec", "admin" and "king": admin is an exec-tier role with the
+ * extra company-management privilege, and king clears every gate in both apps
+ * (see the five-row role model at the top of adminGuard.ts). Anything an exec
+ * may do, an admin and a king may do too.
  *
  * Same contract as requireAdmin: returns a NextResponse (401 or 403) if the
  * caller does not clear the gate, null if they do. Uses currentUser() rather
@@ -28,7 +28,7 @@ export async function requireExec(): Promise<NextResponse | null> {
 
   const user = await currentUser()
   const role = user?.publicMetadata?.role
-  if (role !== 'exec' && role !== 'admin') {
+  if (role !== 'exec' && role !== 'admin' && role !== 'king') {
     return NextResponse.json(
       { error: 'Forbidden: 360 access required' },
       { status: 403 },

@@ -54,9 +54,15 @@ describe('requireExec', () => {
     await expect(requireExec()).resolves.toBeNull()
   })
 
+  it('lets "king" through — king clears every gate', async () => {
+    const { requireExec } = await import('./execGuard')
+    signedInAs('king')
+    await expect(requireExec()).resolves.toBeNull()
+  })
+
   it('403s "hr" and any unrecognised role', async () => {
     const { requireExec } = await import('./execGuard')
-    for (const role of ['hr', 'viewer', 'Exec', 'EXEC']) {
+    for (const role of ['hr', 'viewer', 'Exec', 'EXEC', 'King', 'KING']) {
       signedInAs(role)
       const res = await requireExec()
       expect(res, `role ${role} must not clear the gate`).not.toBeNull()

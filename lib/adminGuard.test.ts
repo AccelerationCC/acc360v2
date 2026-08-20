@@ -45,6 +45,25 @@ describe('requireAdmin', () => {
     await expect(requireAdmin()).resolves.toBeNull()
   })
 
+  it('lets "king" through — king clears every gate in both apps', async () => {
+    const { requireAdmin } = await import('./adminGuard')
+    signedInAs('king')
+    await expect(requireAdmin()).resolves.toBeNull()
+  })
+
+  // Guards the specific risk in adding a top-level role: that "king" was
+  // implemented by loosening this comparison rather than adding a value.
+  // "exec" and "hr" must be exactly as excluded as they were before.
+  it('adding "king" did not loosen the guard for anyone else', async () => {
+    const { requireAdmin } = await import('./adminGuard')
+    for (const role of ['exec', 'hr', 'viewer', 'King', 'KING']) {
+      signedInAs(role)
+      const res = await requireAdmin()
+      expect(res, `role ${role} must not clear the guard`).not.toBeNull()
+      expect(res!.status).toBe(403)
+    }
+  })
+
   // THE PIN. "exec" is the 360-access role; managing companies is the one
   // privilege that separates "admin" from "exec". If this test ever fails
   // because the predicate was widened to accept "exec", that widening is the
@@ -88,6 +107,21 @@ describe('requireAdmin', () => {
 // these drive the real handlers rather than trusting the wiring.
 describe('company write routes reject an exec', () => {
   const params = { params: { id: 'recFAKE1234567890' } }
+
+  it('PATCH .../hotlist ACCEPTS a king, and reaches Airtable', async () => {
+    const { PATCH } = await import('../app/api/companies/[id]/hotlist/route')
+    signedInAs('king')
+    setHotList.mockResolvedValueOnce({ id: 'recFAKE1234567890' })
+    const res = await PATCH(
+      new NextRequest('http://localhost/api/companies/recFAKE1234567890/hotlist', {
+        method: 'PATCH',
+        body: JSON.stringify({ onHotList: true }),
+      }),
+      params,
+    )
+    expect(res.status).toBe(200)
+    expect(setHotList).toHaveBeenCalledWith('recFAKE1234567890', true)
+  })
 
   it('PATCH /api/companies/[id]/hotlist → 403, and Airtable is never touched', async () => {
     const { PATCH } = await import('../app/api/companies/[id]/hotlist/route')
