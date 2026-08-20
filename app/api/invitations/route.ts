@@ -18,7 +18,9 @@ import { recordInviteAudit } from '@/lib/inviteAudit'
  * can only ever grant "exec", so nobody can mint a second admin through it.
  * See EXEC_INVITE_ROLE in lib/execInvites.ts.
  *
- * Mirrors client-newsroom's /hr/api/admin/invitations, one tier over.
+ * Mirrors client-newsroom's /hr/api/admin/invitations, one tier over,
+ * including the check order: authentication → input validation →
+ * authorization.
  *
  * CLERK_SECRET_KEY is read only by the Clerk server SDK inside this handler.
  * Nothing here is exposed to the client; the route returns per-address results
@@ -27,27 +29,27 @@ import { recordInviteAudit } from '@/lib/inviteAudit'
 
 // POST { emails: string[] } — a `role` field in the body is IGNORED.
 export async function POST(req: NextRequest) {
-  // ---- Step 1: input validation. Runs first, per CLAUDE.md's ordering, so a
-  // malformed batch is rejected identically regardless of who sent it. Note
-  // this reveals only that the endpoint exists and wants an `emails` array —
-  // no data is read, nothing is written, and nothing about the caller's
-  // resources is touched before step 3 passes.
+  // ---- Step 1: authentication. Before anything else, including the body: an
+  // unauthenticated caller gets a flat 401 whatever they sent. Validating
+  // first would answer "this endpoint exists and wants an `emails` array" to
+  // someone not yet shown to be anyone — describing the API to a stranger
+  // before telling them they are not welcome.
+  const { userId } = await auth()
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // ---- Step 2: input validation.
   const body = await req.json().catch(() => null)
   const parsed = parseInviteEmails(body)
   if (!parsed.ok) {
     return NextResponse.json({ error: parsed.error }, { status: 400 })
   }
 
-  // ---- Step 2: authentication. Is there a session at all?
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   // ---- Step 3: authorization. Does this user's tier allow inviting? A
-  // separate call, not folded into step 2 — requireExec re-checks the session
+  // separate call, not folded into step 1 — requireExec re-checks the session
   // itself, so this handler is safe even if middleware is bypassed entirely
-  // (CVE-2025-29927) and even if step 2 were removed by a future edit.
+  // (CVE-2025-29927) and even if step 1 were removed by a future edit.
   const guard = await requireExec()
   if (guard) return guard
 
