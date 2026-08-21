@@ -103,6 +103,49 @@ describe('requireAdmin', () => {
   })
 })
 
+// The deprecation window for the admin → superexec rename. Pins both halves:
+// the old string still clears the guard (so nobody tagged 'admin' in Clerk
+// loses company management mid-migration) AND the tiers that never had this
+// privilege still do not. When retagging is confirmed done, deleting the
+// 'admin' case here is the signal that the OR clause in adminGuard.ts can go.
+describe('requireAdmin during the admin → superexec deprecation window', () => {
+  it("accepts the OLD 'admin' string — temporary bridge", async () => {
+    const { requireAdmin } = await import('./adminGuard')
+    signedInAs('admin')
+    await expect(requireAdmin()).resolves.toBeNull()
+  })
+
+  it("accepts the NEW 'superexec' string", async () => {
+    const { requireAdmin } = await import('./adminGuard')
+    signedInAs('superexec')
+    await expect(requireAdmin()).resolves.toBeNull()
+  })
+
+  it("accepts 'king'", async () => {
+    const { requireAdmin } = await import('./adminGuard')
+    signedInAs('king')
+    await expect(requireAdmin()).resolves.toBeNull()
+  })
+
+  it("still rejects 'hr' and 'exec' — neither ever had this privilege", async () => {
+    const { requireAdmin } = await import('./adminGuard')
+    for (const role of ['hr', 'exec']) {
+      signedInAs(role)
+      const res = await requireAdmin()
+      expect(res, `role ${role} must not clear the guard`).not.toBeNull()
+      expect(res!.status).toBe(403)
+    }
+  })
+
+  it('still rejects case variants and unknown roles', async () => {
+    const { requireAdmin } = await import('./adminGuard')
+    for (const role of ['Admin', 'ADMIN', 'Superexec', 'viewer']) {
+      signedInAs(role)
+      expect((await requireAdmin())!.status, `role ${role}`).toBe(403)
+    }
+  })
+})
+
 // The guard is only worth anything if the write routes actually call it, so
 // these drive the real handlers rather than trusting the wiring.
 describe('company write routes reject an exec', () => {

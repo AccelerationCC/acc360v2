@@ -64,7 +64,12 @@ export async function requireAdmin(): Promise<NextResponse | null> {
 
   const user = await currentUser()
   const role = user?.publicMetadata?.role
-  if (role !== 'superexec' && role !== 'king') {
+  // TEMPORARY BRIDGE: accepts the old 'admin' string until production Clerk
+  // users are confirmed migrated to 'superexec' — remove this OR clause once
+  // retagging is done. Without it, every account still tagged 'admin' loses
+  // company management the moment this ships, which is a lockout rather than a
+  // rename. Pinned by a test so the removal is deliberate.
+  if (role !== 'superexec' && role !== 'admin' && role !== 'king') {
     return NextResponse.json(
       { error: 'Forbidden: admin access required' },
       { status: 403 },
