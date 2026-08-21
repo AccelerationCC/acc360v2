@@ -106,7 +106,7 @@ export default function HomePage() {
             Welcome to Acceleration&apos;s Intelligence Hub
           </p>
 
-          <div className="relative flex items-end gap-2 bg-card border border-border rounded-[10px] p-3 focus-within:border-[#FFA300]/50 transition-colors duration-[1200ms]">
+          <div className="relative flex items-end gap-2 bg-card border border-border rounded-[10px] p-3 focus-within:border-acc-blue/50 transition-colors duration-[1200ms]">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -115,12 +115,12 @@ export default function HomePage() {
               }}
               placeholder="Ask MOAA a question..."
               rows={2}
-              className="flex-1 bg-transparent text-light placeholder-muted text-base font-light focus:outline-none resize-none leading-relaxed min-h-[56px]"
+              className="flex-1 bg-transparent text-foreground placeholder-muted text-base font-light focus:outline-none resize-none leading-relaxed min-h-[56px]"
             />
             <button
               onClick={() => ask(input)}
               disabled={!input.trim() || loading}
-              className="shrink-0 w-10 h-10 rounded-lg bg-[#FFA300] hover:bg-[#FFB621] text-[#28282b] flex items-center justify-center transition-all duration-[1200ms] disabled:opacity-40 disabled:cursor-not-allowed active:scale-90 hover:shadow-md hover:shadow-[#FFA300]/30"
+              className="shrink-0 w-10 h-10 rounded-lg bg-acc-blue hover:opacity-90 text-white flex items-center justify-center transition-all duration-[1200ms] disabled:opacity-40 disabled:cursor-not-allowed active:scale-90 hover:shadow-md hover:shadow-acc-blue/30"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
             </button>
@@ -131,7 +131,7 @@ export default function HomePage() {
               <button
                 key={q}
                 onClick={() => ask(q)}
-                className="text-xs px-3 py-1.5 rounded-full border border-border text-muted hover:text-light hover:bg-card hover:border-[#FFA300]/40 active:scale-[0.97] transition-all duration-[1200ms]"
+                className="text-xs px-3 py-1.5 rounded-full border border-border text-muted hover:text-foreground hover:bg-card hover:border-acc-blue/40 active:scale-[0.97] transition-all duration-[1200ms]"
               >
                 {q}
               </button>
@@ -147,12 +147,12 @@ export default function HomePage() {
               const Icon = item.icon
               const isLastOdd = i === arr.length - 1 && arr.length % 2 !== 0
               const inner = (
-                <div className="flex flex-col items-center gap-2 p-4 rounded-[10px] border border-border bg-card hover:border-[#FFA300]/40 hover:bg-[#424245] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 active:scale-[0.98] active:translate-y-0 transition-all duration-[1200ms] cursor-pointer text-center">
-                  <div className="w-9 h-9 rounded-lg bg-[#FFA300]/10 flex items-center justify-center group-hover:bg-[#FFA300]/20 transition-colors duration-[1200ms]">
-                    <Icon size={18} className="text-[#FFA300]" />
+                <div className="flex flex-col items-center gap-2 p-4 rounded-[10px] border border-border bg-card hover:border-acc-blue/40 hover:bg-foreground/[0.03] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-foreground/5 active:scale-[0.98] active:translate-y-0 transition-all duration-[1200ms] cursor-pointer text-center">
+                  <div className="w-9 h-9 rounded-lg bg-acc-blue/10 flex items-center justify-center group-hover:bg-acc-blue/20 transition-colors duration-[1200ms]">
+                    <Icon size={18} className="text-acc-blue" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-light">{item.label}</p>
+                    <p className="text-xs font-medium text-foreground">{item.label}</p>
                     <p className="text-[11px] font-light text-muted">{item.desc}</p>
                   </div>
                 </div>
@@ -173,7 +173,7 @@ export default function HomePage() {
         <div className="flex min-h-[calc(100vh-104px)] w-full flex-col px-0 sm:px-4">
           <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col">
           <div className="flex items-center gap-3 py-2 sm:py-3">
-            <h1 className="font-sans text-sm font-medium tracking-normal text-light">MOAA 2.1</h1>
+            <h1 className="font-sans text-sm font-medium tracking-normal text-foreground">MOAA 2.1</h1>
             <Button
               variant="ghost"
               size="sm"
@@ -189,11 +189,11 @@ export default function HomePage() {
             {messages.map((msg) => (
               <div key={msg.id} className={msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
                 {msg.role === 'user' ? (
-                  <span className="inline-block max-w-[80%] rounded-[18px] bg-[#FFA300]/10 px-4 py-2.5 text-sm font-light text-light sm:max-w-[70%]">
+                  <span className="inline-block max-w-[80%] rounded-[18px] bg-acc-blue/10 px-4 py-2.5 text-sm font-light text-foreground sm:max-w-[70%]">
                     {msg.content}
                   </span>
                 ) : (
-                  <div className="max-w-3xl text-light">
+                  <div className="max-w-3xl text-foreground">
                     <MarkdownContent>{msg.content}</MarkdownContent>
                   </div>
                 )}
@@ -203,12 +203,12 @@ export default function HomePage() {
             {/* In-progress streaming bubble */}
             {loading && (
               <div className="flex justify-start">
-                <div className="relative max-w-3xl text-light">
+                <div className="relative max-w-3xl text-foreground">
                   {streamContent ? (
                     <>
                       <MarkdownContent>{streamContent}</MarkdownContent>
                       {/* live indicator */}
-                      <span className="absolute -right-4 top-2 h-1.5 w-1.5 rounded-full bg-[#FFA300] animate-pulse" />
+                      <span className="absolute -right-4 top-2 h-1.5 w-1.5 rounded-full bg-acc-blue animate-pulse" />
                     </>
                   ) : (
                     <div className="flex items-center gap-2 text-muted text-sm py-0.5">
@@ -222,7 +222,7 @@ export default function HomePage() {
           </div>
 
           {/* Follow-up input */}
-          <div className="sticky bottom-0 bg-navy py-3 sm:py-4">
+          <div className="sticky bottom-0 bg-background py-3 sm:py-4">
             <div className="relative flex items-end gap-2 rounded-[18px] border border-border bg-card p-3 shadow-lg shadow-black/10">
               <textarea
                 value={input}
@@ -233,12 +233,12 @@ export default function HomePage() {
                 placeholder="Ask a follow-up…"
                 rows={1}
                 disabled={loading}
-                className="min-h-[40px] flex-1 resize-none bg-transparent text-sm font-light text-light placeholder-muted focus:outline-none disabled:opacity-50"
+                className="min-h-[40px] flex-1 resize-none bg-transparent text-sm font-light text-foreground placeholder-muted focus:outline-none disabled:opacity-50"
               />
               <button
                 onClick={() => ask(input)}
                 disabled={!input.trim() || loading}
-                className="shrink-0 w-9 h-9 rounded-lg bg-[#FFA300] hover:bg-[#FFB621] text-[#28282b] flex items-center justify-center transition-all duration-[1200ms] disabled:opacity-40 disabled:cursor-not-allowed active:scale-90 hover:shadow-md hover:shadow-[#FFA300]/30"
+                className="shrink-0 w-9 h-9 rounded-lg bg-acc-blue hover:opacity-90 text-white flex items-center justify-center transition-all duration-[1200ms] disabled:opacity-40 disabled:cursor-not-allowed active:scale-90 hover:shadow-md hover:shadow-acc-blue/30"
               >
                 {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
               </button>

@@ -3,9 +3,11 @@
 import { InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes, forwardRef } from 'react'
 import { cn } from '@/lib/utils'
 
+// Mirrors the newsroom's FIELD style (hr-ui.tsx): the card surface rather
+// than the page colour, an alpha border, and the bronze ring on focus.
 const baseInput = [
-  'w-full rounded-lg bg-navy border border-border text-light placeholder-muted px-3 py-2 text-sm font-light',
-  'focus:outline-none focus:ring-1 focus:ring-[#FFA300] focus:border-transparent transition-colors duration-200',
+  'w-full rounded-lg bg-surface border border-input text-foreground placeholder-muted-foreground px-3 py-2 text-sm',
+  'focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent transition-colors duration-200',
 ].join(' ')
 
 // ─── Text Input ───────────────────────────────────────────────────────────────
@@ -21,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
     return (
       <div className="flex flex-col gap-1">
-        {label && <label htmlFor={inputId} className="text-sm font-medium text-light">{label}</label>}
+        {label && <label htmlFor={inputId} className="text-sm font-medium text-foreground">{label}</label>}
         <input ref={ref} id={inputId}
           className={cn(baseInput, error && 'border-red-500 focus:ring-red-500', className)}
           {...props}
@@ -47,7 +49,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
     return (
       <div className="flex flex-col gap-1">
-        {label && <label htmlFor={inputId} className="text-sm font-medium text-light">{label}</label>}
+        {label && <label htmlFor={inputId} className="text-sm font-medium text-foreground">{label}</label>}
         <textarea ref={ref} id={inputId} rows={4}
           className={cn(baseInput, 'resize-y', error && 'border-red-500 focus:ring-red-500', className)}
           {...props}
@@ -75,7 +77,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
     return (
       <div className="flex flex-col gap-1">
-        {label && <label htmlFor={inputId} className="text-sm font-medium text-light">{label}</label>}
+        {label && <label htmlFor={inputId} className="text-sm font-medium text-foreground">{label}</label>}
         <select ref={ref} id={inputId}
           className={cn(baseInput, 'cursor-pointer', error && 'border-red-500 focus:ring-red-500', className)}
           {...props}

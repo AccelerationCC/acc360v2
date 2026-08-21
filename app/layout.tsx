@@ -19,15 +19,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             gutter={8}
             toastOptions={{
               duration: 4000,
+              // Cream card + dark ink, matching the newsroom's surface card.
               style: {
-                background: '#1F2937',
-                color: '#E5E7EB',
-                border: '1px solid #374151',
-                borderRadius: '8px',
+                background: 'var(--card)',
+                color: 'var(--foreground)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius)',
                 fontSize: '14px',
               },
-              success: { iconTheme: { primary: '#8FB5A8', secondary: '#1F2937' } },
-              error:   { iconTheme: { primary: '#EF4444', secondary: '#1F2937' } },
+              success: { iconTheme: { primary: 'var(--color-acc-blue)', secondary: 'var(--card)' } },
+              error:   { iconTheme: { primary: 'var(--destructive)', secondary: 'var(--card)' } },
             }}
           />
         </body>

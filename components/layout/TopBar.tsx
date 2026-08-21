@@ -43,12 +43,12 @@ export function TopBar() {
   const breadcrumbs = getBreadcrumbs(pathname)
 
   return (
-    <header className="h-14 flex items-center justify-between px-4 border-b border-border bg-navy sticky top-0 z-10">
+    <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-xl">
       {/* Left: mobile hamburger + breadcrumbs */}
       <div className="flex items-center gap-3 min-w-0">
         <button
           onClick={toggleSidebar}
-          className="lg:hidden p-1.5 rounded-md text-muted hover:text-light hover:bg-card transition-colors duration-200"
+          className="lg:hidden p-1.5 rounded-md text-muted hover:text-foreground hover:bg-foreground/5 transition-colors duration-200"
           aria-label="Toggle sidebar"
         >
           <Menu size={18} />
@@ -61,13 +61,13 @@ export function TopBar() {
                 <ChevronRight size={14} className="text-muted shrink-0" />
               )}
               {i === breadcrumbs.length - 1 ? (
-                <span className="text-light font-medium truncate">
+                <span className="text-foreground font-medium truncate">
                   {crumb.label}
                 </span>
               ) : (
                 <Link
                   href={crumb.href}
-                  className="text-muted hover:text-light transition-colors duration-200 truncate"
+                  className="text-muted hover:text-foreground transition-colors duration-200 truncate"
                 >
                   {crumb.label}
                 </Link>

@@ -2,54 +2,146 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap');
+/* Newsroom typography: Inter (body), Space Grotesk (editorial headings),
+   JetBrains Mono (uppercase micro-labels), Instrument Serif (display italic,
+   entrance pages only). Replaces DM Sans / DM Serif Display. */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
+
+/* ── Design tokens, translated from client-newsroom's src/styles.css ──
+   That app is Tailwind v4 and declares these in an @theme block; this app is
+   v3, so they live here as custom properties and tailwind.config.ts points at
+   them with var(). Same values, same names, one source of truth per colour.
+
+   LIGHT THEME ONLY this pass — no .dark, no toggle. The newsroom's cream
+   palette is its `.light` variant, so these are its .light values, not its
+   defaults.
+
+   Both accents carry the newsroom's light-mode overrides for WCAG 4.5:1 text
+   contrast — measured (2026-08-06) in that repo, not estimated, against the
+   light page hsl(45 38% 96%), the light card hsl(40 30% 99%), AND each
+   accent's own 15%-alpha chip tint (the binding case for status chips):
+
+   --color-acc-gold hsl(38 68% 30%): page 5.73, card 6.03,
+     text-on-own-/15-tint 4.65 (page) / 4.88 (card).
+     The previous 38% measured 3.91/4.12 — failing body text.
+   --color-acc-blue hsl(28 55% 35%): page 5.67, card 5.97,
+     text-on-own-/15-tint 4.61 / 4.83.
+     Without an override it inherited the dark bronze (49%): 3.23/3.41.
+
+   Darken further only with re-measured numbers; lighten and text fails. */
+:root {
+  --radius: 1rem;
+
+  /* Warm bronze/cream — "acc-blue" is a misnomer inherited from the
+     newsroom's token names; it is the bronze accent. */
+  --color-acc-blue: hsl(28 55% 35%);
+  --color-acc-gold: hsl(38 68% 30%);
+  --color-surface: hsl(40 30% 99%);
+  --color-paper: hsl(45 38% 96%);
+  --color-ink: hsl(0 0% 14%);
+  --color-bronze: hsl(28 55% 35%);
+  --color-muted-ink: hsl(28 30% 38%);
+
+  --background: hsl(45 38% 96%);
+  --foreground: hsl(0 0% 14%);
+  --card: hsl(40 30% 99%);
+  --card-foreground: hsl(0 0% 14%);
+  --primary: hsl(0 0% 14%);
+  --primary-foreground: hsl(45 38% 96%);
+  --secondary: hsl(42 22% 91%);
+  --secondary-foreground: hsl(0 0% 14%);
+  --muted: hsl(42 22% 91%);
+  --muted-foreground: hsl(28 30% 38%);
+  --accent: hsl(28 55% 35%);
+  --accent-foreground: hsl(45 38% 96%);
+  --destructive: #d93636;
+  --destructive-foreground: #fff;
+  --border: hsl(0 0% 14% / 10%);
+  --input: hsl(0 0% 14% / 12%);
+  --ring: hsl(28 55% 35%);
+
+  /* Chart series — the newsroom's --chart-1…5. accent.teal is retired; its
+     one former role (a second series colour) maps to --chart-2. */
+  --chart-1: hsl(28 55% 35%);
+  --chart-2: hsl(28 30% 38%);
+  --chart-3: hsl(0 0% 14%);
+  --chart-4: hsl(42 22% 91%);
+  --chart-5: hsl(45 38% 96%);
+
+  /* The sidebar stays a distinct surface (kept, retinted in place) rather
+     than becoming the page colour. */
+  --sidebar: hsl(42 22% 91%);
+  --sidebar-foreground: hsl(0 0% 14%);
+  --sidebar-accent: hsl(40 30% 99%);
+  --sidebar-border: hsl(0 0% 14% / 10%);
+
+  --scrollbar-track: hsl(42 22% 91%);
+  --scrollbar-thumb: hsl(28 35% 65%);
+  --scrollbar-thumb-hover: hsl(28 40% 52%);
+}
 
 @layer base {
   * {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    border-color: var(--border);
   }
 
   html,
   body {
     height: 100%;
-    background-color: #28282b;
-    color: #DFD5CC;
-    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', system-ui, sans-serif;
     font-weight: 400;
+    font-feature-settings: 'ss01', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  ::selection {
+    background: var(--color-acc-blue);
+    color: #fff;
+  }
+
+  *:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #28282b;
+    background: var(--scrollbar-track);
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #64656A;
-    border-radius: 3px;
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #7B7C81;
+    background: var(--scrollbar-thumb-hover);
   }
 }
 
 @layer components {
+  /* Clerk appearance — retinted from the old charcoal/orange to the cream
+     palette. Same selectors, same !important (Clerk ships its own styles at
+     a higher specificity); only the values changed. */
   .cl-rootBox {
     width: 100%;
   }
 
   .cl-card {
-    background: #3a3a3d !important;
-    border: 0.5px solid #64656A !important;
-    border-radius: 10px !important;
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
     box-shadow: none !important;
   }
 
@@ -59,34 +151,35 @@
   .cl-formFieldLabel,
   .cl-dividerText,
   .cl-footerActionText {
-    color: #DFD5CC !important;
+    color: var(--foreground) !important;
   }
 
   .cl-formButtonPrimary {
-    background: #FFA300 !important;
-    color: #28282b !important;
+    background: var(--color-acc-blue) !important;
+    color: #fff !important;
     font-weight: 500 !important;
-    border-radius: 8px !important;
+    border-radius: 9999px !important;
     box-shadow: none !important;
   }
 
   .cl-formButtonPrimary:hover {
-    background: #FFB621 !important;
+    background: var(--color-acc-blue) !important;
+    opacity: 0.9;
   }
 
   .cl-formFieldInput {
-    background: #28282b !important;
-    border-color: #64656A !important;
-    color: #DFD5CC !important;
+    background: var(--background) !important;
+    border-color: var(--input) !important;
+    color: var(--foreground) !important;
   }
 
   .cl-formFieldInput:focus {
-    border-color: #FFA300 !important;
+    border-color: var(--ring) !important;
     box-shadow: none !important;
   }
 
   .cl-footerActionLink {
-    color: #FFA300 !important;
+    color: var(--color-acc-blue) !important;
   }
 
   .cl-internal-b3fm6y {
@@ -96,8 +189,27 @@
 
 @layer utilities {
   .focus-ring {
-    @apply focus:outline-none focus:ring-1 focus:ring-[#FFA300];
+    @apply focus:outline-none focus:ring-1 focus:ring-[color:var(--ring)];
   }
+
+  /* The newsroom's editorial marquee, used by the ticker strip. */
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: no-preference) {

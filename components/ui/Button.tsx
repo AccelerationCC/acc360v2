@@ -26,19 +26,23 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const base =
-      'inline-flex items-center justify-center gap-2 font-medium rounded-2xl transition-all duration-[1200ms] focus:outline-none focus:ring-1 focus:ring-[#FFA300] disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.97]'
+      'inline-flex items-center justify-center gap-2 font-medium rounded-full transition-all duration-[1200ms] focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.97]'
 
+    // Mirrors the newsroom's BUTTON_VARIANTS (hr-ui.tsx): a solid bronze
+    // primary with white text, and everything else an alpha-on-foreground
+    // outline or wash. The heavy black drop shadows are gone — they were
+    // tuned for a charcoal page and read as grime on cream.
     const variants = {
       primary:
-        'bg-[#FFA300] hover:bg-[#FFB621] text-[#28282b] shadow-md shadow-[#FFA300]/20 hover:shadow-xl hover:shadow-[#FFA300]/40',
+        'bg-acc-blue text-white hover:opacity-90',
       secondary:
-        'bg-card hover:bg-[#424245] text-light border border-border shadow-sm shadow-black/20 hover:shadow-md hover:shadow-black/40',
+        'border border-foreground/10 text-foreground/70 hover:border-foreground/30 hover:text-foreground',
       ghost:
-        'bg-transparent hover:bg-card text-muted hover:text-light hover:shadow-sm hover:shadow-black/20',
+        'bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground',
       danger:
-        'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 shadow-sm shadow-red-500/10 hover:shadow-md hover:shadow-red-500/20',
+        'border border-red-500/30 text-red-700 hover:bg-red-500/10',
       outline:
-        'bg-transparent border border-border hover:border-[#FFA300] text-light shadow-sm shadow-black/20 hover:shadow-md hover:shadow-black/30',
+        'bg-transparent border border-foreground/10 text-foreground hover:border-acc-blue',
     }
 
     const sizes = {

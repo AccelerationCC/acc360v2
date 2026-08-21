@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import {
   Home, Building2, BarChart3, Plus,
-  ChevronLeft, ChevronRight, Flame, Newspaper,
+  ChevronLeft, ChevronRight, Flame, Newspaper, ArrowLeft,
 } from 'lucide-react'
 import { UserButton, useUser } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
@@ -62,10 +62,10 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
           key={href}
           href={href}
           className={cn(
-            'flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-colors duration-[2000ms]',
+            'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-[2000ms]',
             active
-              ? 'bg-[#A7BDB1] text-[#28282b] border-l-2 border-[#FFA300]'
-              : 'text-[#A7BDB1] hover:text-light hover:bg-[#55565c]',
+              ? 'bg-acc-blue/15 text-acc-blue font-medium'
+              : 'text-foreground/60 hover:text-foreground hover:bg-foreground/5',
           )}
           title={!sidebarOpen ? label : undefined}
         >
@@ -74,15 +74,31 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
         </Link>
       ))}
 
+      {/* Back to the newsroom. A plain <a>, not next/link: ACC360 is mounted
+          under /360 by a dev-server proxy, so "/" is the newsroom at the proxy
+          root — a client-side route transition would try to resolve it inside
+          this app and 404. A full navigation hands it to the proxy. */}
+      <a
+        href="/"
+        className={cn(
+          'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-[2000ms]',
+          'text-foreground/60 hover:text-foreground hover:bg-foreground/5',
+        )}
+        title={!sidebarOpen ? 'Back to ACC' : undefined}
+      >
+        <ArrowLeft size={18} className="shrink-0" />
+        {sidebarOpen && <span className="truncate font-medium">Back to ACC</span>}
+      </a>
+
       {/* Add Company — admin only */}
       {isAdmin && (
         <Link
           href="/companies/new"
           className={cn(
-            'flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-colors duration-[2000ms]',
+            'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-[2000ms]',
             pathname === '/companies/new'
-              ? 'bg-[#A7BDB1] text-[#28282b] border-l-2 border-[#FFA300]'
-              : 'text-[#A7BDB1] hover:text-light hover:bg-[#55565c]',
+              ? 'bg-acc-blue/15 text-acc-blue font-medium'
+              : 'text-foreground/60 hover:text-foreground hover:bg-foreground/5',
           )}
           title={!sidebarOpen ? 'Add Company' : undefined}
         >
@@ -107,7 +123,7 @@ export function Sidebar() {
   return (
     <>
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-20 lg:hidden" onClick={toggleSidebar} />
+        <div className="fixed inset-0 z-20 bg-foreground/20 backdrop-blur-sm lg:hidden" onClick={toggleSidebar} />
       )}
 
       <aside className={cn(
@@ -118,17 +134,20 @@ export function Sidebar() {
         <div className="flex items-center h-16 px-3 border-b border-border shrink-0">
           {sidebarOpen ? (
             <div className="flex-1 min-w-0 overflow-hidden">
-              <p className="font-serif text-[#FFA300] text-base leading-none tracking-wide">ACC</p>
-              <p className="font-serif text-[#A7BDB1] text-[11px] leading-none tracking-[0.08em] mt-1 opacity-80">
+              <p className="flex items-center gap-2 font-sans text-sm font-bold leading-none tracking-[0.35em] text-foreground">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-acc-blue" />
+                ACC
+              </p>
+              <p className="mt-1.5 font-mono text-[9px] uppercase leading-none tracking-[0.28em] text-foreground/50">
                 Intelligence Hub
               </p>
             </div>
           ) : (
-            <span className="font-serif text-[#FFA300] text-lg leading-none shrink-0">A</span>
+            <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-acc-blue" />
           )}
           <button
             onClick={toggleSidebar}
-            className="ml-auto shrink-0 p-1 rounded-md text-muted hover:text-light hover:bg-[#55565c] transition-colors duration-[2000ms]"
+            className="ml-auto shrink-0 rounded-md p-1 text-foreground/50 transition-colors duration-[2000ms] hover:bg-foreground/5 hover:text-foreground"
           >
             {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
           </button>
