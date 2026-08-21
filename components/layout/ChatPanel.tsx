@@ -7,6 +7,7 @@ import { cn, generateId } from '@/lib/utils'
 import { useApp } from '@/contexts/AppContext'
 import { useStatusMessages } from '@/lib/hooks/useStatusMessages'
 import { ChatMessage } from '@/types'
+import { apiFetch } from '@/lib/apiPath'
 
 export function ChatPanel() {
   const { chatOpen, toggleChat, allCompanies, companiesReady } = useApp()
@@ -44,7 +45,7 @@ export function ChatPanel() {
     setStreamContent('')
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text }),

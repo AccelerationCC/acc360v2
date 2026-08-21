@@ -11,6 +11,7 @@ import { generateId } from '@/lib/utils'
 import { useStatusMessages } from '@/lib/hooks/useStatusMessages'
 import { useAdmin } from '@/lib/hooks/useAdmin'
 import { ChatMessage } from '@/types'
+import { apiFetch } from '@/lib/apiPath'
 
 const QUICK_QUESTIONS = [
   'Build me a chart comparing all Hot List companies by revenue',
@@ -49,7 +50,7 @@ export default function HomePage() {
     setInput('')
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: question }),

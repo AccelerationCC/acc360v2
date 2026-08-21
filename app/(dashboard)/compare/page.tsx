@@ -11,6 +11,7 @@ import { PageLoader } from '@/components/ui/LoadingSpinner'
 import { MarkdownContent } from '@/components/ui/MarkdownContent'
 import { useApp } from '@/contexts/AppContext'
 import { useStatusMessages } from '@/lib/hooks/useStatusMessages'
+import { apiFetch } from '@/lib/apiPath'
 
 // ─── Fixed row order for the comparison table ─────────────────────────────────
 
@@ -85,7 +86,7 @@ export default function ComparePage() {
   const statusMessage = useStatusMessages(statusActive)
 
   useEffect(() => {
-    fetch('/api/companies')
+    apiFetch('/api/companies')
       .then((r) => r.json())
       .then((data: Company[]) => setAllCompanies(Array.isArray(data) ? data : []))
       .catch(() => {})
@@ -162,7 +163,7 @@ export default function ComparePage() {
     ].join('\n')
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),

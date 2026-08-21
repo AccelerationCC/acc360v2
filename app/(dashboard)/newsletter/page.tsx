@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import type { Newsletter, NewsletterCompanySection } from '@/types/newsletter'
 import type { NewsCategory, NewsArticle, SourceTier } from '@/types/newsroom'
 import { CATEGORY_COLORS, CATEGORY_COLOR_ALL } from '@/components/theme/category-colors'
+import { apiFetch } from '@/lib/apiPath'
 
 // ─── Category meta — single source of truth, mirrors Newsroom.tsx ────────────
 
@@ -336,8 +337,8 @@ export default function NewsletterPage() {
   // Load today's (or most recent) newsletter + archive index in parallel
   useEffect(() => {
     Promise.all([
-      fetch('/api/newsletter').then((r) => r.json() as Promise<NewsletterResponse>),
-      fetch('/api/newsletter/archive').then((r) => r.json() as Promise<{ dates: string[] }>),
+      apiFetch('/api/newsletter').then((r) => r.json() as Promise<NewsletterResponse>),
+      apiFetch('/api/newsletter/archive').then((r) => r.json() as Promise<{ dates: string[] }>),
     ]).then(([news, arch]) => {
       setData(news)
       setArchiveDates(arch.dates ?? [])
@@ -347,7 +348,7 @@ export default function NewsletterPage() {
 
   function loadDate(date: string) {
     setLoading(true)
-    fetch(`/api/newsletter?date=${date}`)
+    apiFetch(`/api/newsletter?date=${date}`)
       .then((r) => r.json() as Promise<NewsletterResponse>)
       .then(setData)
       .catch(console.error)

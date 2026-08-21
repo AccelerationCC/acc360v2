@@ -9,6 +9,7 @@ import {
   NewsroomResult, NewsArticle, NewsCategory, SourceTier,
 } from '@/types/newsroom'
 import { CATEGORY_COLORS, CATEGORY_COLOR_ALL } from '@/components/theme/category-colors'
+import { apiFetch } from '@/lib/apiPath'
 
 // ─── Category presentation ───────────────────────────────────────────────────
 // Single source of truth for label + color + icon per category.
@@ -52,8 +53,8 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
     setError(null)
     try {
       const res = companyId
-        ? await fetch(`/api/newsroom?id=${encodeURIComponent(companyId)}`)
-        : await fetch('/api/newsroom', {
+        ? await apiFetch(`/api/newsroom?id=${encodeURIComponent(companyId)}`)
+        : await apiFetch('/api/newsroom', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(seed ?? {}),

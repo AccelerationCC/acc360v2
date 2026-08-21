@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { PageLoader } from '@/components/ui/LoadingSpinner'
 import { useApp } from '@/contexts/AppContext'
 import { useAdmin } from '@/lib/hooks/useAdmin'
+import { apiFetch } from '@/lib/apiPath'
 
 type Filters = {
   vertical: string
@@ -47,7 +48,7 @@ function CompaniesContent() {
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
-    fetch('/api/companies')
+    apiFetch('/api/companies')
       .then((r) => { if (!r.ok) throw new Error('Failed to fetch'); return r.json() })
       .then((data: Company[]) => setCompanies(data))
       .catch((err) => setError(err.message))

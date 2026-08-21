@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { apiFetch } from '@/lib/apiPath'
 
 interface DeleteModalProps {
   companyId: string
@@ -19,7 +20,7 @@ export function DeleteModal({ companyId, companyName, onClose }: DeleteModalProp
   async function handleDelete() {
     setDeleting(true)
     try {
-      const res = await fetch(`/api/companies/${companyId}`, {
+      const res = await apiFetch(`/api/companies/${companyId}`, {
         method: 'DELETE',
       })
 

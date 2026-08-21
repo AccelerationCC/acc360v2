@@ -7,6 +7,7 @@ import { Input, Textarea, Select } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { PageLoader } from '@/components/ui/LoadingSpinner'
 import { FieldSchema, Company, AirtableFieldValue } from '@/types'
+import { apiFetch } from '@/lib/apiPath'
 
 interface CompanyFormProps {
   company?: Company
@@ -42,7 +43,7 @@ export function CompanyForm({ company }: CompanyFormProps) {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    fetch('/api/airtable/schema')
+    apiFetch('/api/airtable/schema')
       .then((r) => r.json())
       .then((fields: FieldSchema[]) => {
         // Computed fields (formula, rollup, lookup, count, createdTime…) and

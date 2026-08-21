@@ -13,6 +13,7 @@ import { HotListToggle } from '@/components/companies/HotListToggle'
 import { Newsroom } from '@/components/companies/Newsroom'
 import { useApp } from '@/contexts/AppContext'
 import { useAdmin } from '@/lib/hooks/useAdmin'
+import { apiFetch } from '@/lib/apiPath'
 
 export default function CompanyProfilePage() {
   const { id } = useParams<{ id: string }>()
@@ -28,7 +29,7 @@ export default function CompanyProfilePage() {
   const canCompare = compareIds.length < 3 || selected
 
   useEffect(() => {
-    fetch(`/api/companies/${id}`)
+    apiFetch(`/api/companies/${id}`)
       .then((r) => { if (!r.ok) throw new Error('Not found'); return r.json() })
       .then(setCompany)
       .catch((err) => setError(err.message))

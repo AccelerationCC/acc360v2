@@ -9,6 +9,7 @@ import { CompanyForm } from '@/components/companies/CompanyForm'
 import { Button } from '@/components/ui/Button'
 import { PageLoader } from '@/components/ui/LoadingSpinner'
 import { useAdmin } from '@/lib/hooks/useAdmin'
+import { apiFetch } from '@/lib/apiPath'
 
 export default function EditCompanyPage() {
   const { id } = useParams<{ id: string }>()
@@ -23,7 +24,7 @@ export default function EditCompanyPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch(`/api/companies/${id}`)
+    apiFetch(`/api/companies/${id}`)
       .then((r) => {
         if (!r.ok) throw new Error('Company not found')
         return r.json()
