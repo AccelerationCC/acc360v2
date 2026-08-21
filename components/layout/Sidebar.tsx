@@ -62,7 +62,7 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
           key={href}
           href={href}
           className={cn(
-            'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-[2000ms]',
+            'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-200',
             active
               ? 'bg-acc-blue/15 text-acc-blue font-medium'
               : 'text-foreground/60 hover:text-foreground hover:bg-foreground/5',
@@ -81,7 +81,7 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
       <a
         href="/"
         className={cn(
-          'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-[2000ms]',
+          'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-200',
           'text-foreground/60 hover:text-foreground hover:bg-foreground/5',
         )}
         title={!sidebarOpen ? 'Back to ACC' : undefined}
@@ -95,7 +95,7 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
         <Link
           href="/companies/new"
           className={cn(
-            'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-[2000ms]',
+            'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-200',
             pathname === '/companies/new'
               ? 'bg-acc-blue/15 text-acc-blue font-medium'
               : 'text-foreground/60 hover:text-foreground hover:bg-foreground/5',
@@ -147,7 +147,7 @@ export function Sidebar() {
           )}
           <button
             onClick={toggleSidebar}
-            className="ml-auto shrink-0 rounded-md p-1 text-foreground/50 transition-colors duration-[2000ms] hover:bg-foreground/5 hover:text-foreground"
+            className="ml-auto shrink-0 rounded-md p-1 text-foreground/50 transition-colors duration-200 hover:bg-foreground/5 hover:text-foreground"
           >
             {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
           </button>
