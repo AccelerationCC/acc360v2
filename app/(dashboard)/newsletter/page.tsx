@@ -9,6 +9,7 @@ import {
 import { cn } from '@/lib/utils'
 import type { Newsletter, NewsletterCompanySection } from '@/types/newsletter'
 import type { NewsCategory, NewsArticle, SourceTier } from '@/types/newsroom'
+import { CATEGORY_COLORS, CATEGORY_COLOR_ALL } from '@/components/theme/category-colors'
 
 // ─── Category meta — single source of truth, mirrors Newsroom.tsx ────────────
 
@@ -26,13 +27,13 @@ const CATEGORY_META: Record<NewsCategory, {
   color: string
   Icon: React.ElementType
 }> = {
-  ma:         { label: 'M&A',         filterLabel: 'M&A',         color: '#996200', Icon: TrendingUp },
-  leadership: { label: 'Leadership',  filterLabel: 'Leadership',  color: '#41709A', Icon: Users },
-  finance:    { label: 'Finance',     filterLabel: 'Finance',     color: '#3D7A50', Icon: DollarSign },
-  client:     { label: 'Client Wins', filterLabel: 'Client Wins', color: '#896501', Icon: Briefcase },
-  drama:      { label: 'Reputation',  filterLabel: 'Drama',       color: '#C43B3B', Icon: Flame },
-  award:      { label: 'Awards',      filterLabel: 'Awards',      color: '#9C45C4', Icon: Award },
-  general:    { label: 'Relevant',    filterLabel: 'General',     color: '#577565', Icon: Circle },
+  ma:         { label: 'M&A',         filterLabel: 'M&A',         color: CATEGORY_COLORS.ma, Icon: TrendingUp },
+  leadership: { label: 'Leadership',  filterLabel: 'Leadership',  color: CATEGORY_COLORS.leadership, Icon: Users },
+  finance:    { label: 'Finance',     filterLabel: 'Finance',     color: CATEGORY_COLORS.finance, Icon: DollarSign },
+  client:     { label: 'Client Wins', filterLabel: 'Client Wins', color: CATEGORY_COLORS.client, Icon: Briefcase },
+  drama:      { label: 'Reputation',  filterLabel: 'Drama',       color: CATEGORY_COLORS.drama, Icon: Flame },
+  award:      { label: 'Awards',      filterLabel: 'Awards',      color: CATEGORY_COLORS.award, Icon: Award },
+  general:    { label: 'Relevant',    filterLabel: 'General',     color: CATEGORY_COLORS.general, Icon: Circle },
 }
 
 const TIER_LABEL: Record<SourceTier, string> = { t1: 'Tier 1', t2: 'Tier 2', t3: 'Source' }
@@ -451,7 +452,7 @@ export default function NewsletterPage() {
                 Company
               </div>
               <FilterChip
-                label="All" color="#806751" active={activeCompany === 'all'}
+                label="All" color={CATEGORY_COLOR_ALL} active={activeCompany === 'all'}
                 count={newsletter.sections.length}
                 onClick={() => setActiveCompany('all')}
               />
@@ -472,7 +473,7 @@ export default function NewsletterPage() {
                 Category
               </div>
               <FilterChip
-                label="All" color="#806751" active={activeCategory === 'all'}
+                label="All" color={CATEGORY_COLOR_ALL} active={activeCategory === 'all'}
                 count={totalArticles}
                 onClick={() => setActiveCategory('all')}
               />

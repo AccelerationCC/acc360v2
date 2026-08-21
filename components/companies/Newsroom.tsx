@@ -8,6 +8,7 @@ import {
 import {
   NewsroomResult, NewsArticle, NewsCategory, SourceTier,
 } from '@/types/newsroom'
+import { CATEGORY_COLORS, CATEGORY_COLOR_ALL } from '@/components/theme/category-colors'
 
 // ─── Category presentation ───────────────────────────────────────────────────
 // Single source of truth for label + color + icon per category.
@@ -22,13 +23,13 @@ import {
 // client 4.81, drama 4.70, award 4.66, general 4.60, all 4.75.
 // The originals measured 1.35–2.58:1 — every one failed.
 const CATEGORY_META: Record<NewsCategory, { label: string; filterLabel: string; color: string; Icon: typeof Circle }> = {
-  ma:         { label: 'M&A',        filterLabel: 'M&A',         color: '#996200', Icon: TrendingUp },
-  leadership: { label: 'Leadership', filterLabel: 'Leadership',  color: '#41709A', Icon: Users },
-  finance:    { label: 'Finance',    filterLabel: 'Finance',     color: '#3D7A50', Icon: DollarSign },
-  client:     { label: 'Client Wins',filterLabel: 'Client Wins', color: '#896501', Icon: Briefcase },
-  drama:      { label: 'Reputation', filterLabel: 'Drama',       color: '#C43B3B', Icon: Flame },
-  award:      { label: 'Awards',     filterLabel: 'Awards',      color: '#9C45C4', Icon: Award },
-  general:    { label: 'Relevant',   filterLabel: 'General',     color: '#577565', Icon: Circle },
+  ma:         { label: 'M&A',        filterLabel: 'M&A',         color: CATEGORY_COLORS.ma, Icon: TrendingUp },
+  leadership: { label: 'Leadership', filterLabel: 'Leadership',  color: CATEGORY_COLORS.leadership, Icon: Users },
+  finance:    { label: 'Finance',    filterLabel: 'Finance',     color: CATEGORY_COLORS.finance, Icon: DollarSign },
+  client:     { label: 'Client Wins',filterLabel: 'Client Wins', color: CATEGORY_COLORS.client, Icon: Briefcase },
+  drama:      { label: 'Reputation', filterLabel: 'Drama',       color: CATEGORY_COLORS.drama, Icon: Flame },
+  award:      { label: 'Awards',     filterLabel: 'Awards',      color: CATEGORY_COLORS.award, Icon: Award },
+  general:    { label: 'Relevant',   filterLabel: 'General',     color: CATEGORY_COLORS.general, Icon: Circle },
 }
 
 const TIER_LABEL: Record<SourceTier, string> = { t1: 'Tier 1', t2: 'Tier 2', t3: 'Source' }
@@ -192,7 +193,7 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
         <div className="flex flex-wrap gap-2">
           <FilterChip
             label="All" count={data!.articles.length}
-            active={activeCat === 'all'} color="#806751"
+            active={activeCat === 'all'} color={CATEGORY_COLOR_ALL}
             onClick={() => setActiveCat('all')}
           />
           {(Object.keys(CATEGORY_META) as NewsCategory[])
