@@ -90,7 +90,7 @@ export default function CompanyProfilePage() {
 
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h1 className="text-2xl font-bold text-light">{name}</h1>
+                <h1 className="text-2xl font-bold text-foreground">{name}</h1>
                 {phase && (
                   <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full border ${getPhaseStyle(phase)}`}>
                     {phase}
@@ -103,7 +103,7 @@ export default function CompanyProfilePage() {
                   </span>
                 )}
               </div>
-              {vertical && <p className="text-sm text-accent-teal">{vertical}</p>}
+              {vertical && <p className="text-sm text-acc-gold">{vertical}</p>}
               {company.createdTime && (
                 <p className="text-xs text-muted mt-1">
                   Added {new Date(company.createdTime).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -117,7 +117,7 @@ export default function CompanyProfilePage() {
                 onClick={() => canCompare && toggleCompare(company.id)}
                 disabled={!canCompare}
                 className={`inline-flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-medium border transition-all duration-[2000ms] active:scale-[0.97] ${
-                  selected ? 'border-accent-orange/40 bg-accent-orange/10 text-accent-orange' : 'border-border text-muted hover:text-light'
+                  selected ? 'border-acc-blue/40 bg-acc-blue/10 text-acc-blue' : 'border-border text-muted hover:text-foreground'
                 } disabled:opacity-40 disabled:cursor-not-allowed`}
               >
                 <GitCompare size={13} />
@@ -150,28 +150,28 @@ export default function CompanyProfilePage() {
 
           {/* Location */}
           {(hq || satOffices) && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <MapPin size={14} className="text-accent-orange" />
+                <MapPin size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">Location</p>
               </div>
-              {hq && <p className="text-sm text-light font-medium">{hq}</p>}
+              {hq && <p className="text-sm text-foreground font-medium">{hq}</p>}
               {satOffices && <p className="text-xs text-muted mt-1">Satellite: {satOffices}</p>}
             </div>
           )}
 
           {/* Contact */}
           {(contact || email) && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <User size={14} className="text-accent-orange" />
+                <User size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">Contact</p>
               </div>
-              {contact && <p className="text-sm text-light font-medium">{contact}</p>}
+              {contact && <p className="text-sm text-foreground font-medium">{contact}</p>}
               {title   && <p className="text-xs text-muted">{title}</p>}
               {email && (
                 email.includes('@')
-                  ? <a href={`mailto:${email}`} className="text-xs text-accent-orange hover:underline mt-1 block">{email}</a>
+                  ? <a href={`mailto:${email}`} className="text-xs text-acc-blue hover:underline mt-1 block">{email}</a>
                   : <p className="text-xs text-muted mt-1">{email}</p>
               )}
             </div>
@@ -179,24 +179,24 @@ export default function CompanyProfilePage() {
 
           {/* Revenue */}
           {revenue !== undefined && revenue !== null && revenue !== '' && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign size={14} className="text-accent-orange" />
+                <DollarSign size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">Revenue</p>
               </div>
-              <p className="text-xl font-bold text-light">{formatRevenue(revenue)}</p>
+              <p className="text-xl font-bold text-foreground">{formatRevenue(revenue)}</p>
             </div>
           )}
 
           {/* Website */}
           {website && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <Globe size={14} className="text-accent-orange" />
+                <Globe size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">Website</p>
               </div>
               <a href={website} target="_blank" rel="noopener noreferrer"
-                className="text-sm text-accent-orange hover:underline break-all">
+                className="text-sm text-acc-blue hover:underline break-all">
                 {website.replace(/^https?:\/\//, '')}
               </a>
             </div>
@@ -204,13 +204,13 @@ export default function CompanyProfilePage() {
 
           {/* Client List */}
           {clientList && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <Globe size={14} className="text-accent-orange" />
+                <Globe size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">Client List</p>
               </div>
               <a href={clientList} target="_blank" rel="noopener noreferrer"
-                className="text-sm text-accent-orange hover:underline break-all">
+                className="text-sm text-acc-blue hover:underline break-all">
                 View clients ↗
               </a>
             </div>
@@ -218,45 +218,45 @@ export default function CompanyProfilePage() {
 
           {/* LTM Revenue */}
           {ltmRevenue && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign size={14} className="text-accent-orange" />
+                <DollarSign size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">LTM Revenue &apos;25</p>
               </div>
-              <p className="text-xl font-bold text-light">{ltmRevenue}</p>
+              <p className="text-xl font-bold text-foreground">{ltmRevenue}</p>
             </div>
           )}
 
           {/* EBITDA */}
           {ebitda && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign size={14} className="text-accent-orange" />
+                <DollarSign size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">EBITDA &apos;25</p>
               </div>
-              <p className="text-xl font-bold text-light">{ebitda}</p>
+              <p className="text-xl font-bold text-foreground">{ebitda}</p>
             </div>
           )}
 
           {/* Forecast */}
           {forecast && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign size={14} className="text-accent-orange" />
+                <DollarSign size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">Forecast Rev / EBITDA</p>
               </div>
-              <p className="text-sm font-medium text-light">{forecast}</p>
+              <p className="text-sm font-medium text-foreground">{forecast}</p>
             </div>
           )}
 
           {/* Offices (Hot List) */}
           {officesHotList && (
-            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/15">
+            <div className="bg-card border border-border rounded-xl p-4 transition-all duration-[2000ms] hover:-translate-y-0.5 hover:shadow-md hover:shadow-foreground/5">
               <div className="flex items-center gap-2 mb-2">
-                <MapPin size={14} className="text-accent-orange" />
+                <MapPin size={14} className="text-acc-blue" />
                 <p className="text-xs font-semibold text-muted uppercase tracking-wider">Offices (Hot List)</p>
               </div>
-              <p className="text-sm text-light">{officesHotList}</p>
+              <p className="text-sm text-foreground">{officesHotList}</p>
             </div>
           )}
         </div>
@@ -265,10 +265,10 @@ export default function CompanyProfilePage() {
         {notes && (
           <div className="bg-card border border-border rounded-xl p-5">
             <div className="flex items-center gap-2 mb-3">
-              <FileText size={14} className="text-accent-orange" />
+              <FileText size={14} className="text-acc-blue" />
               <p className="text-xs font-semibold text-muted uppercase tracking-wider">Notes</p>
             </div>
-            <p className="text-sm text-light leading-relaxed whitespace-pre-wrap">{notes}</p>
+            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{notes}</p>
           </div>
         )}
 

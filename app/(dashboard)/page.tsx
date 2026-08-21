@@ -223,7 +223,7 @@ export default function HomePage() {
 
           {/* Follow-up input */}
           <div className="sticky bottom-0 bg-background py-3 sm:py-4">
-            <div className="relative flex items-end gap-2 rounded-[18px] border border-border bg-card p-3 shadow-lg shadow-black/10">
+            <div className="relative flex items-end gap-2 rounded-[18px] border border-border bg-card p-3 shadow-lg shadow-foreground/5">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

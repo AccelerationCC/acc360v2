@@ -16,29 +16,13 @@ const config: Config = {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
-        // `navy` kept as an alias so existing bg-navy markup keeps working
-        // while screens are converted one at a time; it now resolves to the
-        // cream page colour, not charcoal.
-        navy: {
-          DEFAULT: 'var(--background)',
-          dark: 'var(--background)',
-        },
         sidebar: {
           DEFAULT: 'var(--sidebar)',
           foreground: 'var(--sidebar-foreground)',
           accent: 'var(--sidebar-accent)',
           border: 'var(--sidebar-border)',
         },
-        // The bronze accent. `accent.orange` and friends are retained as
-        // aliases pointing at bronze so no screen renders an unstyled colour
-        // mid-conversion; `accent.teal` is retired to --chart-2.
-        accent: {
-          DEFAULT: 'var(--accent)',
-          orange: 'var(--color-acc-blue)',
-          yellow: 'var(--color-acc-gold)',
-          teal: 'var(--chart-2)',
-          pale: 'var(--color-acc-blue)',
-        },
+        accent: 'var(--accent)',
         'acc-blue': 'var(--color-acc-blue)',
         'acc-gold': 'var(--color-acc-gold)',
         surface: 'var(--color-surface)',
@@ -74,9 +58,6 @@ const config: Config = {
           DEFAULT: 'var(--destructive)',
           foreground: 'var(--destructive-foreground)',
         },
-        // `light` was the old cream text colour on charcoal. Inverted now:
-        // it is the dark ink that reads on the cream page.
-        light: 'var(--foreground)',
         chart: {
           1: 'var(--chart-1)',
           2: 'var(--chart-2)',
@@ -91,9 +72,6 @@ const config: Config = {
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
         // Display italic, entrance pages only.
         display: ['Instrument Serif', 'Georgia', 'serif'],
-        // `serif` kept as an alias so existing font-serif markup resolves to
-        // the editorial face rather than a browser default mid-conversion.
-        serif: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         sm: 'calc(var(--radius) - 4px)',
@@ -104,7 +82,10 @@ const config: Config = {
         '3xl': 'calc(var(--radius) + 12px)',
       },
       borderWidth: {
-        DEFAULT: '0.5px',
+        // 1px, not the old 0.5px: a hairline was legible as a darker line on
+        // the charcoal page but reads as nothing against cream, where the
+        // border token is only ink at 10% alpha.
+        DEFAULT: '1px',
         '0': '0px',
         '2': '2px',
         '4': '4px',

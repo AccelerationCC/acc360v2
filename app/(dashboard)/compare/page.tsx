@@ -50,9 +50,9 @@ function ContactCell({ fields }: { fields: Fields }) {
 
   return (
     <div className="space-y-0.5">
-      {hasName && <p className="text-sm text-light">{name}</p>}
+      {hasName && <p className="text-sm text-foreground">{name}</p>}
       {subtitleParts.length > 0 && (
-        <p className={hasName ? 'text-xs text-muted' : 'text-sm text-light'}>
+        <p className={hasName ? 'text-xs text-muted' : 'text-sm text-foreground'}>
           {subtitleParts.join(' · ')}
         </p>
       )}
@@ -197,8 +197,8 @@ export default function ComparePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-light flex items-center gap-2">
-            <GitCompare size={22} className="text-accent-orange" />
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <GitCompare size={22} className="text-acc-blue" />
             Compare Companies
           </h1>
           <p className="text-muted text-sm mt-0.5">Select up to 3 companies to compare side by side</p>
@@ -225,10 +225,10 @@ export default function ComparePage() {
               onChange={(e) => { setQuery(e.target.value); setDropdownOpen(true) }}
               onFocus={() => setDropdownOpen(true)}
               placeholder="Search and add a company…"
-              className="w-full bg-card border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-light placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors"
+              className="w-full bg-card border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-acc-blue focus:border-transparent transition-colors"
             />
             {dropdownOpen && suggestions.length > 0 && (
-              <div className="absolute z-20 top-full mt-1 w-full bg-[#111827] border border-border rounded-xl shadow-xl overflow-hidden">
+              <div className="absolute z-20 top-full mt-1 w-full bg-surface border border-border rounded-xl shadow-xl overflow-hidden">
                 {suggestions.map((c) => {
                   const name = getCompanyName(c.fields)
                   return (
@@ -240,7 +240,7 @@ export default function ComparePage() {
                       <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-white font-bold text-[11px] shrink-0 ${getAvatarColor(name)}`}>
                         {getInitials(name)}
                       </div>
-                      <span className="text-sm text-light truncate">{name}</span>
+                      <span className="text-sm text-foreground truncate">{name}</span>
                     </button>
                   )
                 })}
@@ -256,7 +256,7 @@ export default function ComparePage() {
               return (
                 <span
                   key={c.id}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-accent-orange/10 border border-accent-orange/30 text-accent-orange"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-acc-blue/10 border border-acc-blue/30 text-acc-blue"
                 >
                   {name.length > 28 ? name.slice(0, 26) + '…' : name}
                   <button onClick={() => toggleCompare(c.id)} className="hover:text-white transition-colors">
@@ -289,8 +289,8 @@ export default function ComparePage() {
           <div className="overflow-x-auto rounded-2xl border border-border">
             <table className="w-full min-w-[600px]">
               <thead>
-                <tr className="border-b border-border bg-[#111827]">
-                  <th className="text-left px-5 py-4 text-xs font-semibold text-muted uppercase tracking-wider w-44 sticky left-0 bg-[#111827]">
+                <tr className="border-b border-border bg-surface">
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-muted uppercase tracking-wider w-44 sticky left-0 bg-surface">
                     Field
                   </th>
                   {selected.map((company) => {
@@ -302,14 +302,14 @@ export default function ComparePage() {
                             {getInitials(name)}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-light truncate max-w-[140px]">{name}</p>
-                            <Link href={`/companies/${company.id}`} className="inline-flex items-center gap-0.5 text-xs text-muted hover:text-accent-orange">
+                            <p className="text-sm font-semibold text-foreground truncate max-w-[140px]">{name}</p>
+                            <Link href={`/companies/${company.id}`} className="inline-flex items-center gap-0.5 text-xs text-muted hover:text-acc-blue">
                               View <ExternalLink size={10} />
                             </Link>
                           </div>
                           <button
                             onClick={() => toggleCompare(company.id)}
-                            className="ml-auto text-muted hover:text-light shrink-0"
+                            className="ml-auto text-muted hover:text-foreground shrink-0"
                             aria-label="Remove from comparison"
                           >
                             <X size={14} />
@@ -342,7 +342,7 @@ export default function ComparePage() {
                         const href = display.match(/^https?:\/\//i) ? display : `https://${display}`
                         return (
                           <td key={company.id} className="px-5 py-3.5">
-                            <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-accent-orange hover:underline">
+                            <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-acc-blue hover:underline">
                               Link <ExternalLink size={10} />
                             </a>
                           </td>
@@ -351,7 +351,7 @@ export default function ComparePage() {
 
                       return (
                         <td key={company.id} className="px-5 py-3.5">
-                          <span className={`text-sm ${isEmpty ? 'text-muted italic' : 'text-light'}`}>{display}</span>
+                          <span className={`text-sm ${isEmpty ? 'text-muted italic' : 'text-foreground'}`}>{display}</span>
                         </td>
                       )
                     })}
@@ -381,11 +381,11 @@ export default function ComparePage() {
                   {evalText ? (
                     <>
                       <div className="flex items-center gap-2 border-b border-border/50 pb-3 mb-3">
-                        <Sparkles size={13} className="text-accent-orange/60 animate-pulse shrink-0" />
-                        <span className="text-xs font-semibold text-accent-orange/60 uppercase tracking-wider">AI M&amp;A Evaluation</span>
+                        <Sparkles size={13} className="text-acc-blue/60 animate-pulse shrink-0" />
+                        <span className="text-xs font-semibold text-acc-blue/60 uppercase tracking-wider">AI M&amp;A Evaluation</span>
                       </div>
                       <MarkdownContent>{evalText}</MarkdownContent>
-                      <span className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-[#FFA300] animate-pulse" />
+                      <span className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-acc-blue animate-pulse" />
                     </>
                   ) : (
                     <div className="flex items-center gap-2 text-muted text-sm">
@@ -400,11 +400,11 @@ export default function ComparePage() {
               {evalState === 'done' && (
                 <div className="rounded-2xl border border-border bg-card/20 px-6 py-5 space-y-3 animate-fade-in">
                   <div className="flex items-center gap-2 border-b border-border/50 pb-3">
-                    <Sparkles size={13} className="text-accent-orange shrink-0" />
-                    <span className="text-xs font-semibold text-accent-orange uppercase tracking-wider">AI M&amp;A Evaluation</span>
+                    <Sparkles size={13} className="text-acc-blue shrink-0" />
+                    <span className="text-xs font-semibold text-acc-blue uppercase tracking-wider">AI M&amp;A Evaluation</span>
                     <button
                       onClick={() => setEvalState('idle')}
-                      className="ml-auto text-muted hover:text-light transition-colors"
+                      className="ml-auto text-muted hover:text-foreground transition-colors"
                       aria-label="Dismiss"
                     >
                       <X size={13} />

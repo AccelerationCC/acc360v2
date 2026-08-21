@@ -128,7 +128,7 @@ function CompaniesContent() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-medium text-light tracking-[0.02em]">Companies</h1>
+          <h1 className="font-editorial text-2xl font-medium text-foreground tracking-[0.02em]">Companies</h1>
           <p className="font-light text-muted text-sm mt-0.5">
             {companies.length} record{companies.length !== 1 ? 's' : ''} in your database
           </p>
@@ -144,8 +144,8 @@ function CompaniesContent() {
 
       {/* Compare banner */}
       {compareIds.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 bg-[#FFA300]/10 border border-[#FFA300]/20 rounded-[10px] px-4 py-3 text-center sm:text-left">
-          <p className="text-sm font-medium text-[#FFA300]">
+        <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 bg-acc-blue/10 border border-acc-blue/20 rounded-[10px] px-4 py-3 text-center sm:text-left">
+          <p className="text-sm font-medium text-acc-blue">
             {compareIds.length} compan{compareIds.length === 1 ? 'y' : 'ies'} selected for comparison
           </p>
           <div className="flex gap-2">
@@ -165,10 +165,10 @@ function CompaniesContent() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search companies by name or any field…"
-            className="w-full bg-card border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm font-light text-light placeholder-muted focus:outline-none focus:ring-1 focus:ring-[#FFA300] focus:border-transparent transition-colors duration-200"
+            className="w-full bg-card border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm font-light text-foreground placeholder-muted focus:outline-none focus:ring-1 focus:ring-acc-blue focus:border-transparent transition-colors duration-200"
           />
           {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-light text-xs transition-colors duration-200">
+            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground text-xs transition-colors duration-200">
               Clear
             </button>
           )}
@@ -181,7 +181,7 @@ function CompaniesContent() {
             className={`col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors duration-200 ${
               hotListOnly
                 ? 'border-orange-500/50 text-orange-400 bg-orange-500/10'
-                : 'border-border text-muted hover:text-light'
+                : 'border-border text-muted hover:text-foreground'
             }`}
           >
             <Flame size={12} />
@@ -194,10 +194,10 @@ function CompaniesContent() {
                 <select
                   value={filters[key]}
                   onChange={(e) => setFilter(key, e.target.value)}
-                  className={`appearance-none w-full text-xs px-3 py-1.5 pr-7 rounded-lg border cursor-pointer bg-card transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-[#FFA300] ${
+                  className={`appearance-none w-full text-xs px-3 py-1.5 pr-7 rounded-lg border cursor-pointer bg-card transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-acc-blue ${
                     filters[key]
-                      ? 'border-[#FFA300]/50 text-[#FFA300] bg-[#FFA300]/5'
-                      : 'border-border text-muted hover:text-light'
+                      ? 'border-acc-blue/50 text-acc-blue bg-acc-blue/5'
+                      : 'border-border text-muted hover:text-foreground'
                   }`}
                 >
                   <option value="">{label}</option>
@@ -213,7 +213,7 @@ function CompaniesContent() {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-border text-muted hover:text-light transition-colors duration-200"
+              className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-border text-muted hover:text-foreground transition-colors duration-200"
             >
               <X size={11} />
               Clear filters
@@ -233,7 +233,7 @@ function CompaniesContent() {
           {search || hasActiveFilters ? (
             <div className="space-y-3">
               <p className="text-sm font-light">No companies match your filters.</p>
-              <button onClick={clearFilters} className="text-xs text-[#FFA300] hover:underline">
+              <button onClick={clearFilters} className="text-xs text-acc-blue hover:underline">
                 Clear all filters
               </button>
             </div>
@@ -261,7 +261,7 @@ function CompaniesContent() {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed bg-[#FFA300] text-[#28282b] hover:bg-[#FFB621] disabled:bg-card disabled:text-muted disabled:border disabled:border-border"
+                className="px-5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed bg-acc-blue text-white hover:opacity-90 disabled:bg-card disabled:text-muted disabled:border disabled:border-border"
               >
                 Previous
               </button>
@@ -271,7 +271,7 @@ function CompaniesContent() {
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="px-5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed bg-[#FFA300] text-[#28282b] hover:bg-[#FFB621] disabled:bg-card disabled:text-muted disabled:border disabled:border-border"
+                className="px-5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed bg-acc-blue text-white hover:opacity-90 disabled:bg-card disabled:text-muted disabled:border disabled:border-border"
               >
                 Next
               </button>

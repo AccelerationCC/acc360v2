@@ -25,21 +25,26 @@ interface ChartSpec {
   data: ChartDataPoint[]
 }
 
-const BAR_COLORS = ['#FFA300', '#A7BDB1', '#FECD42', '#7B7C81']
+// The newsroom's chart series tokens. Recharts needs concrete values rather
+// than CSS classes, so these read the custom properties at module scope —
+// same source as every other colour in the app.
+const CHART = (n: number) =>
+  `var(--chart-${n})`
+const BAR_COLORS = [CHART(1), CHART(2), CHART(3), CHART(4)]
 
-const AXIS_TICK = { fill: '#7B7C81', fontSize: 11 } as const
+const AXIS_TICK = { fill: 'var(--color-muted-ink)', fontSize: 11 } as const
 
 const TOOLTIP_PROPS = {
-  cursor: { fill: '#ffffff08' },
+  cursor: { fill: 'var(--muted)' },
   contentStyle: {
-    backgroundColor: '#3a3a3d',
-    border: '1px solid #64656A',
+    backgroundColor: 'var(--card)',
+    border: '1px solid var(--border)',
     borderRadius: 8,
     fontSize: 12,
     padding: '6px 10px',
   },
-  labelStyle: { color: '#DFD5CC', marginBottom: 2 },
-  itemStyle: { color: '#FFA300' },
+  labelStyle: { color: 'var(--foreground)', marginBottom: 2 },
+  itemStyle: { color: 'var(--color-acc-blue)' },
 }
 
 function BarView({ spec }: { spec: ChartSpec }) {
@@ -63,16 +68,16 @@ function LineView({ spec }: { spec: ChartSpec }) {
   return (
     <ResponsiveContainer width="100%" height={220}>
       <LineChart data={spec.data} margin={{ top: 4, right: 12, left: -10, bottom: 4 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#64656A" opacity={0.2} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.2} />
         <XAxis dataKey="name" tick={AXIS_TICK} axisLine={false} tickLine={false} />
         <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} />
         <Tooltip {...TOOLTIP_PROPS} />
         <Line
           type="monotone"
           dataKey="value"
-          stroke="#FFA300"
+          stroke="var(--chart-1)"
           strokeWidth={2}
-          dot={{ fill: '#FFA300', r: 3, strokeWidth: 0 }}
+          dot={{ fill: 'var(--chart-1)', r: 3, strokeWidth: 0 }}
           activeDot={{ r: 5, strokeWidth: 0 }}
         />
       </LineChart>

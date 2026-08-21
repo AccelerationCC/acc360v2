@@ -11,16 +11,24 @@ import {
 
 // ─── Category presentation ───────────────────────────────────────────────────
 // Single source of truth for label + color + icon per category.
-// Colors are chosen to sit on the ACC360 charcoal without clashing with accent-orange.
+// Colors are chosen to sit on the ACC360 charcoal without clashing with acc-blue.
 
+// Categorical hues, darkened for the cream page. These are the one place hue
+// carries meaning rather than brand (green = finance, red = reputation), so
+// they are NOT collapsed into the bronze/gold accents — each keeps its hue and
+// is darkened until it clears 4.5:1 as TEXT on the page, which is how it is
+// used (the category label at the bottom of this file sets `color`).
+// Measured against hsl(45 38% 96%): ma 4.63, leadership 4.72, finance 4.60,
+// client 4.81, drama 4.70, award 4.66, general 4.60, all 4.75.
+// The originals measured 1.35–2.58:1 — every one failed.
 const CATEGORY_META: Record<NewsCategory, { label: string; filterLabel: string; color: string; Icon: typeof Circle }> = {
-  ma:         { label: 'M&A',        filterLabel: 'M&A',         color: '#FFA300', Icon: TrendingUp },
-  leadership: { label: 'Leadership', filterLabel: 'Leadership',  color: '#7FA6C9', Icon: Users },
-  finance:    { label: 'Finance',    filterLabel: 'Finance',     color: '#8FC7A0', Icon: DollarSign },
-  client:     { label: 'Client Wins',filterLabel: 'Client Wins', color: '#FECD42', Icon: Briefcase },
-  drama:      { label: 'Reputation', filterLabel: 'Drama',       color: '#D98080', Icon: Flame },
-  award:      { label: 'Awards',     filterLabel: 'Awards',      color: '#C9A6D9', Icon: Award },
-  general:    { label: 'Relevant',   filterLabel: 'General',     color: '#A7BDB1', Icon: Circle },
+  ma:         { label: 'M&A',        filterLabel: 'M&A',         color: '#996200', Icon: TrendingUp },
+  leadership: { label: 'Leadership', filterLabel: 'Leadership',  color: '#41709A', Icon: Users },
+  finance:    { label: 'Finance',    filterLabel: 'Finance',     color: '#3D7A50', Icon: DollarSign },
+  client:     { label: 'Client Wins',filterLabel: 'Client Wins', color: '#896501', Icon: Briefcase },
+  drama:      { label: 'Reputation', filterLabel: 'Drama',       color: '#C43B3B', Icon: Flame },
+  award:      { label: 'Awards',     filterLabel: 'Awards',      color: '#9C45C4', Icon: Award },
+  general:    { label: 'Relevant',   filterLabel: 'General',     color: '#577565', Icon: Circle },
 }
 
 const TIER_LABEL: Record<SourceTier, string> = { t1: 'Tier 1', t2: 'Tier 2', t3: 'Source' }
@@ -81,17 +89,17 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
     return (
       <div className="bg-card border border-border rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="shrink-0 w-10 h-10 rounded-xl bg-accent-orange/10 border border-accent-orange/20 grid place-items-center">
-            <Newspaper size={18} className="text-accent-orange" />
+          <div className="shrink-0 w-10 h-10 rounded-xl bg-acc-blue/10 border border-acc-blue/20 grid place-items-center">
+            <Newspaper size={18} className="text-acc-blue" />
           </div>
           <div>
-            <h2 className="font-serif text-lg text-light flex items-center gap-2">Newsroom</h2>
+            <h2 className="font-editorial text-lg text-foreground flex items-center gap-2">Newsroom</h2>
             <p className="text-sm text-muted">Pull the latest verified coverage for this company, summarized and sorted.</p>
           </div>
         </div>
         <button
           onClick={pull}
-          className="inline-flex items-center justify-center gap-2 font-medium rounded-2xl bg-accent-orange hover:bg-accent-yellow text-navy px-4 py-2 text-sm shadow-md shadow-accent-orange/20 hover:shadow-xl hover:shadow-accent-orange/40 transition-all duration-[1200ms] active:scale-[0.97] focus:outline-none focus:ring-1 focus:ring-accent-orange whitespace-nowrap"
+          className="inline-flex items-center justify-center gap-2 font-medium rounded-2xl bg-acc-blue hover:bg-acc-gold text-navy px-4 py-2 text-sm shadow-md shadow-acc-blue/20 hover:shadow-xl hover:shadow-acc-blue/40 transition-all duration-[1200ms] active:scale-[0.97] focus:outline-none focus:ring-1 focus:ring-acc-blue whitespace-nowrap"
         >
           <Search size={15} /> Pull latest news
         </button>
@@ -104,8 +112,8 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
   if (loading) {
     return (
       <div className="bg-card border border-border rounded-2xl p-10 flex flex-col items-center justify-center gap-3 text-center">
-        <RefreshCw size={22} className="text-accent-orange animate-spin" />
-        <p className="text-sm text-light font-medium">Searching the web for recent coverage…</p>
+        <RefreshCw size={22} className="text-acc-blue animate-spin" />
+        <p className="text-sm text-foreground font-medium">Searching the web for recent coverage…</p>
         <p className="text-xs text-muted">Verifying each result against the company&apos;s identity.</p>
       </div>
     )
@@ -117,19 +125,19 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
 
       {/* Executive brief */}
       <div className="relative overflow-hidden bg-card border border-border rounded-2xl p-6">
-        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-accent-orange to-accent-teal" />
+        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-acc-blue to-acc-gold" />
         <div className="flex items-baseline justify-between gap-3 flex-wrap mb-3">
-          <span className="text-[11px] font-semibold tracking-[0.14em] uppercase text-accent-orange">
+          <span className="text-[11px] font-semibold tracking-[0.14em] uppercase text-acc-blue">
             Executive Brief
           </span>
           <span className="text-[11px] text-muted flex items-center gap-1.5">
-            Confidence <b className="text-accent-teal font-semibold">{data!.brief.confidence}</b>
-            <span className="text-border">·</span>
+            Confidence <b className="text-acc-gold font-semibold">{data!.brief.confidence}</b>
+            <span className="text-foreground/30">·</span>
             {data!.brief.sourceCount} {data!.brief.sourceCount === 1 ? 'source' : 'sources'}
           </span>
         </div>
 
-        <p className="font-serif text-[16px] leading-relaxed text-light mb-4">
+        <p className="font-editorial text-[16px] leading-relaxed text-foreground mb-4">
           {data!.brief.summary}
         </p>
 
@@ -138,7 +146,7 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
             {data!.brief.flags.map((fl, i) => {
               const meta = CATEGORY_META[fl.category]
               return (
-                <div key={i} className="flex gap-3 items-start text-sm text-light/90 leading-snug">
+                <div key={i} className="flex gap-3 items-start text-sm text-foreground/90 leading-snug">
                   <span
                     className="shrink-0 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded border mt-0.5"
                     style={{ color: meta.color, borderColor: meta.color }}
@@ -155,15 +163,15 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
 
       {/* Feed header */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h3 className="font-serif text-xl text-light flex items-center gap-2.5">
+        <h3 className="font-editorial text-xl text-foreground flex items-center gap-2.5">
           Relevant News
-          <span className="font-sans text-xs font-semibold text-muted bg-navy border border-border rounded-full px-2.5 py-0.5">
+          <span className="font-sans text-xs font-semibold text-muted bg-background border border-border rounded-full px-2.5 py-0.5">
             {data!.articles.length} {data!.articles.length === 1 ? 'story' : 'stories'}
           </span>
         </h3>
         <button
           onClick={pull}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted hover:text-light border border-border hover:border-accent-orange/40 rounded-lg px-3 py-1.5 transition-all duration-[1200ms] active:scale-[0.97]"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted hover:text-foreground border border-border hover:border-acc-blue/40 rounded-lg px-3 py-1.5 transition-all duration-[1200ms] active:scale-[0.97]"
         >
           <RefreshCw size={12} /> Refresh
         </button>
@@ -172,7 +180,7 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
       {/* Empty / sparse state */}
       {data!.sparse && (
         <div className="bg-card border border-border rounded-xl p-8 text-center">
-          <p className="text-sm text-light font-medium mb-1">No clearly-matching coverage found.</p>
+          <p className="text-sm text-foreground font-medium mb-1">No clearly-matching coverage found.</p>
           <p className="text-xs text-muted">
             {data!.note ?? 'This company has a thin or ambiguous news footprint. That itself can be useful signal for an indie target.'}
           </p>
@@ -184,7 +192,7 @@ export function Newsroom({ companyId, seed }: NewsroomProps) {
         <div className="flex flex-wrap gap-2">
           <FilterChip
             label="All" count={data!.articles.length}
-            active={activeCat === 'all'} color="#DFD5CC"
+            active={activeCat === 'all'} color="#806751"
             onClick={() => setActiveCat('all')}
           />
           {(Object.keys(CATEGORY_META) as NewsCategory[])
@@ -235,7 +243,7 @@ function FilterChip({
       className={`inline-flex items-center gap-2 text-xs font-semibold rounded-full px-3.5 py-1.5 border transition-all duration-300 active:scale-[0.97] ${
         active
           ? 'text-navy border-transparent'
-          : 'text-muted bg-card border-border hover:text-light hover:border-muted'
+          : 'text-muted bg-card border-border hover:text-foreground hover:border-muted'
       }`}
       style={active ? { backgroundColor: color } : undefined}
     >
@@ -262,12 +270,12 @@ function ArticleRow({ article: a }: { article: NewsArticle }) {
             {meta.label}
           </span>
           <span className="text-muted">·</span>
-          <span className="font-semibold text-light/80 flex items-center gap-1.5">
+          <span className="font-semibold text-foreground/80 flex items-center gap-1.5">
             {a.source}
             <span
               className={`text-[9.5px] font-bold uppercase tracking-wide px-1.5 py-px rounded ${
                 a.tier === 't1'
-                  ? 'text-accent-teal bg-accent-teal/10'
+                  ? 'text-acc-gold bg-acc-gold/10'
                   : 'text-muted bg-light/[0.04]'
               }`}
             >
@@ -281,7 +289,7 @@ function ArticleRow({ article: a }: { article: NewsArticle }) {
             </>
           )}
         </div>
-        <h4 className="font-serif text-[17px] leading-snug text-light group-hover:text-white transition-colors mb-1">
+        <h4 className="font-editorial text-[17px] leading-snug text-foreground group-hover:text-white transition-colors mb-1">
           {a.title}
         </h4>
         {a.snippet && <p className="text-sm text-muted leading-relaxed">{a.snippet}</p>}

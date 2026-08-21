@@ -15,7 +15,7 @@ export default function SignInPage() {
   const [loading, setLoading]   = useState(false)
 
   const inputClass =
-    'w-full rounded-lg bg-[#111827] border border-border text-light placeholder-muted px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors'
+    'w-full rounded-lg bg-surface border border-border text-foreground placeholder-muted px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-acc-blue focus:border-transparent transition-colors'
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -41,20 +41,20 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-navy flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-accent-orange mb-4">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-acc-blue mb-4">
           <span className="text-2xl font-bold text-navy">A</span>
         </div>
-        <h1 className="text-2xl font-bold text-light">ACC Intelligence</h1>
+        <h1 className="text-2xl font-bold text-foreground">ACC Intelligence</h1>
         <p className="text-muted text-sm mt-1">Internal access only</p>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm bg-card border border-border rounded-2xl p-8 space-y-4">
-        <h2 className="text-lg font-semibold text-light text-center mb-2">Sign in</h2>
+        <h2 className="text-lg font-semibold text-foreground text-center mb-2">Sign in</h2>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-light">Email</label>
+          <label className="text-sm font-medium text-foreground">Email</label>
           <input
             type="email"
             required
@@ -67,7 +67,7 @@ export default function SignInPage() {
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-light">Password</label>
+          <label className="text-sm font-medium text-foreground">Password</label>
           <input
             type="password"
             required
@@ -86,7 +86,7 @@ export default function SignInPage() {
         <button
           type="submit"
           disabled={loading || !isLoaded}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-accent-orange hover:bg-orange-500 text-navy font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-acc-blue hover:bg-orange-500 text-navy font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading && <Loader2 size={16} className="animate-spin" />}
           {loading ? 'Signing in…' : 'Sign in'}

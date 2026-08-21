@@ -10,7 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <AppProvider>
-      <div className="flex h-screen overflow-hidden bg-navy">
+      <div className="flex h-screen overflow-hidden bg-background">
         <Sidebar />
         <MainContent>{children}</MainContent>
         <ChatPanelGuard />
