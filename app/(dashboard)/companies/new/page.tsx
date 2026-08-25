@@ -1,10 +1,14 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { CompanyForm } from '@/components/companies/CompanyForm'
+import { hasAdminTier } from '@/lib/roles'
 
 export default async function NewCompanyPage() {
+  // Same predicate as requireAdmin, which gates the POST this form submits to.
+  // This used to test `!== 'superexec'`, so a king or admin was allowed to
+  // create a company by API but redirected away from the page for doing it.
   const user = await currentUser()
-  if (!user || user.publicMetadata?.role !== 'superexec') {
+  if (!hasAdminTier(user?.publicMetadata?.role)) {
     redirect('/companies')
   }
 

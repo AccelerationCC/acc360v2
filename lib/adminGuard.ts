@@ -1,5 +1,6 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import { hasAdminTier } from '@/lib/roles'
 
 // ============================================================================
 // THE ROLE MODEL — five roles. "superexec" is NOT a superuser; "king" is.
@@ -64,12 +65,12 @@ export async function requireAdmin(): Promise<NextResponse | null> {
 
   const user = await currentUser()
   const role = user?.publicMetadata?.role
-  // TEMPORARY BRIDGE: accepts the old 'admin' string until production Clerk
-  // users are confirmed migrated to 'superexec' — remove this OR clause once
-  // retagging is done. Without it, every account still tagged 'admin' loses
-  // company management the moment this ships, which is a lockout rather than a
-  // rename. Pinned by a test so the removal is deliberate.
-  if (role !== 'superexec' && role !== 'admin' && role !== 'king') {
+  // The admitted set lives in lib/roles.ts, import-free so the client hook
+  // (useAdmin) and the /companies/new page can share this exact rule instead of
+  // spelling their own narrower copies — which is how they came to admit only
+  // 'superexec' while this guard admitted king and admin too. The temporary
+  // 'admin' bridge and its removal note live with the constant.
+  if (!hasAdminTier(role)) {
     return NextResponse.json(
       { error: 'Forbidden: admin access required' },
       { status: 403 },
