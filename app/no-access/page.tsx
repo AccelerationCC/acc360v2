@@ -38,6 +38,7 @@ export default function NoAccess() {
             You&apos;re signed in, but your account doesn&apos;t have 360 access. If you should have
             it, contact an administrator — or switch accounts with the avatar above.
           </p>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- deliberate basePath escape: "/" is the newsroom at the proxy root, and <Link> would prefix it to /360/ and 404. */}
           <a
             href="/"
             className="inline-flex items-center gap-2 rounded-full bg-acc-blue px-5 py-2.5 text-xs font-bold text-white transition-opacity hover:opacity-90"

@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
   // ---- Step 3: authorization. Does this user's tier allow inviting? A
   // separate call, not folded into step 1 — requireExec re-checks the session
-  // itself, so this handler is safe even if middleware is bypassed entirely
+  // itself, so this handler is safe even if the proxy is bypassed entirely
   // (CVE-2025-29927) and even if step 1 were removed by a future edit.
   const guard = await requireExec()
   if (guard) return guard

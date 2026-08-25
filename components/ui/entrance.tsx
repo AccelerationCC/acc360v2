@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useEffect, useState, type ReactNode } from 'react'
+import { Fragment, useSyncExternalStore, type ReactNode } from 'react'
 
 // The entrance pages' shared vocabulary, ported from client-newsroom's
 // src/components/entrance-ui.tsx so ACC360's door dresses the same way as the
@@ -67,14 +67,44 @@ const CLOCK_ZONES: { label: string; timeZone: string }[] = [
   { label: 'TYO', timeZone: 'Asia/Tokyo' },
 ]
 
+// The clock as an external store rather than state driven by an effect. The
+// effect version called setNow() synchronously on mount to fill in the first
+// time, which is what react-hooks/set-state-in-effect objects to: it commits a
+// render, then immediately schedules another.
+//
+// One interval shared by every subscriber, and a snapshot that changes ONLY on
+// tick — getSnapshot has to return a stable reference between ticks, since
+// handing back a fresh Date on every call would re-render forever.
+let clockSnapshot: Date | null = null
+let clockTimer: ReturnType<typeof setInterval> | null = null
+const clockListeners = new Set<() => void>()
+
+function subscribeClock(onStoreChange: () => void): () => void {
+  // Refreshed on subscribe, so a component mounting between ticks shows the
+  // current time instead of whatever the last tick left behind.
+  clockSnapshot = new Date()
+  clockListeners.add(onStoreChange)
+  clockTimer ??= setInterval(() => {
+    clockSnapshot = new Date()
+    for (const listener of clockListeners) listener()
+  }, 30_000)
+
+  return () => {
+    clockListeners.delete(onStoreChange)
+    if (clockListeners.size === 0 && clockTimer) {
+      clearInterval(clockTimer)
+      clockTimer = null
+    }
+  }
+}
+
+const getClockSnapshot = () => clockSnapshot
+// The server has no clock. null keeps SSR markup and the first client paint in
+// agreement — the same thing the old `useState<Date | null>(null)` achieved.
+const getClockServerSnapshot = () => null
+
 function useClock() {
-  const [now, setNow] = useState<Date | null>(null)
-  useEffect(() => {
-    setNow(new Date())
-    const iv = setInterval(() => setNow(new Date()), 30_000)
-    return () => clearInterval(iv)
-  }, [])
-  return now
+  return useSyncExternalStore(subscribeClock, getClockSnapshot, getClockServerSnapshot)
 }
 
 /**

@@ -54,9 +54,16 @@ function CompaniesContent() {
   // the chip free to toggle until the next navigation.
   const hotListParam = searchParams.get('hotlist') === '1'
   const [hotListOnly, setHotListOnly] = useState(hotListParam)
-  useEffect(() => {
+  // Synced DURING RENDER, not in an effect. React's documented pattern for
+  // adjusting state when an input changes: the re-render happens before
+  // anything is committed, so the list never paints once under the outgoing
+  // filter and then again under the incoming one. The effect version did paint
+  // that intermediate frame, and is what react-hooks/set-state-in-effect flags.
+  const [prevHotListParam, setPrevHotListParam] = useState(hotListParam)
+  if (hotListParam !== prevHotListParam) {
+    setPrevHotListParam(hotListParam)
     setHotListOnly(hotListParam)
-  }, [hotListParam])
+  }
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
@@ -94,7 +101,15 @@ function CompaniesContent() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated  = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
-  useEffect(() => { setCurrentPage(1) }, [search, filters, hotListOnly])
+  // A changed filter set means page 1 — same during-render reset as the Hot
+  // List sync above. In an effect this committed one frame still showing the
+  // old page number against the new result set (page 4 of a 1-page list).
+  const filterKey = JSON.stringify([search, filters, hotListOnly])
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey)
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey)
+    setCurrentPage(1)
+  }
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length
   const hasActiveFilters  = activeFilterCount > 0 || hotListOnly
