@@ -9,19 +9,27 @@
 #     lives only in history, which a full-history scan still reaches.
 #
 # Instance: ins_3FVe6JebWFBWXajTk4KNUYT7dKv (quality-crawdad-53), development,
-# 7 users. A read-only probe on 2026-08-25 found the key STILL ACCEPTED
+# 7 test users. A read-only probe on 2026-08-25 found the key STILL ACCEPTED
 # (HTTP 200).
 #
-# ⚠️ THE CREDENTIAL IS NOT REVOKED. Rotation requires the Clerk dashboard —
-# there is no Backend API path for a secret key to revoke itself — and the
-# owning Clerk account is a personal one that is currently inaccessible. What
-# has been done instead is to retire the instance from ACC's own systems:
-# acc360v2's Preview-scoped Clerk keys now point at pleasing-bulldog-80, the
-# instance the newsroom already uses. Revoking the leaked key remains an OPEN
-# follow-up, tracked in client-newsroom's MERGE_LOG.md.
+# ⚠️ ACCEPTED RESIDUAL RISK — THE KEY WAS NEVER ROTATED.
+# Accepted as-is by Yuvraj on 2026-08-25. Rotation is Clerk-Dashboard-only (no
+# Backend API lets a secret key revoke itself) and the owning account could not
+# be identified: the two most likely candidates from git authorship
+# (yuvrajsinghacademic@gmail.com and Michael Kittilson's personal account) hold
+# no application matching this instance.
 #
-# These entries therefore mean "known, contained, and tracked" — NOT "harmless".
-# History is deliberately not rewritten: this is a shared repo, and a rewrite
-# would break every existing clone while the credential stayed live anyway.
+# So the key remains technically live and extractable from this repo's git
+# history by anyone with clone access. Bounding it: development instance only,
+# 7 test users, no production data, no active use since acc360v2's Preview
+# Clerk keys were repointed at pleasing-bulldog-80 (the instance the newsroom
+# already uses). No sk_live was ever committed.
+#
+# Revisit this if acc360v2 is ever made PUBLIC, or if the instance is put back
+# into active use. Full record in client-newsroom's MERGE_LOG.md.
+#
+# These entries mean "known, bounded, and accepted" — NOT "harmless", and NOT
+# "fixed". History is deliberately not rewritten: this is a shared repo, and a
+# rewrite would break every existing clone while the credential stayed live.
 6d7aca7d475ef11d8b5766ee7ffa43e8e5285978:.env.example:generic-api-key:13
 6d7aca7d475ef11d8b5766ee7ffa43e8e5285978:.env.example:stripe-access-token:14
