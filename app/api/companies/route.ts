@@ -2,10 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { getAllCompanies, createCompany, airtableError } from '@/lib/airtable'
 import { requireAdmin } from '@/lib/adminGuard'
+import { requireExec } from '@/lib/execGuard'
 
 export async function GET() {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // 360 tier, not just a signed-in session. These reads return real company
+  // data, and until now they checked userId alone — an `hr` account or one with
+  // no role could fetch all of it directly. Page-level gating alone would have
+  // left this path open.
+  const guard = await requireExec()
+  if (guard) return guard
 
   // Diagnostic: log the env values actually seen at runtime (no secret values)
   console.log('[/api/companies] AIRTABLE_BASE_ID =', process.env.AIRTABLE_BASE_ID ?? '⚠️ MISSING')

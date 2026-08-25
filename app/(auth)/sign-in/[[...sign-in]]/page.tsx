@@ -4,6 +4,14 @@ import { useState, FormEvent } from 'react'
 import { useSignIn } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import {
+  EntranceEyebrow,
+  EntranceGlows,
+  EntranceHeadline,
+  EntranceWordmark,
+  GrainOverlay,
+  WorldClockStrip,
+} from '@/components/ui/entrance'
 
 export default function SignInPage() {
   const { signIn, isLoaded, setActive } = useSignIn()
@@ -41,14 +49,28 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-acc-blue mb-4">
-          <span className="text-2xl font-bold text-navy">A</span>
-        </div>
-        <h1 className="text-2xl font-bold text-foreground">ACC Intelligence</h1>
-        <p className="text-muted text-sm mt-1">Internal access only</p>
-      </div>
+    // Layering, back to front: ambient glows, the grain film, then content —
+    // the same order as client-newsroom's /sign-in, so the two doors match.
+    <div className="relative min-h-screen w-full overflow-hidden bg-background text-foreground">
+      <EntranceGlows />
+      <GrainOverlay />
+
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-[520px] flex-col items-center justify-between px-6 py-6">
+        <header className="flex w-full items-center justify-between pt-2 animate-fade-up">
+          <EntranceWordmark />
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/50">
+            Secure Channel · Live
+          </span>
+        </header>
+
+        <div className="flex w-full flex-1 flex-col items-center justify-center gap-8 py-10">
+          <div className="flex animate-fade-up flex-col items-center text-center">
+            <EntranceEyebrow>Restricted access · ACC360</EntranceEyebrow>
+            <EntranceHeadline>Sign in</EntranceHeadline>
+            <p className="mx-auto max-w-[300px] text-[13px] leading-relaxed text-foreground/70">
+              Company intelligence for the ACC team. Contact your administrator if you need access.
+            </p>
+          </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm bg-card border border-border rounded-2xl p-8 space-y-4">
         <h2 className="text-lg font-semibold text-foreground text-center mb-2">Sign in</h2>
@@ -80,22 +102,28 @@ export default function SignInPage() {
         </div>
 
         {error && (
-          <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>
+          <p className="text-xs text-red-700 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>
         )}
 
         <button
           type="submit"
           disabled={loading || !isLoaded}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-acc-blue hover:bg-orange-500 text-navy font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-acc-blue text-white hover:opacity-90 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading && <Loader2 size={16} className="animate-spin" />}
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
-      </form>
+        </form>
 
-      <p className="mt-8 text-xs text-muted text-center max-w-xs">
-        Access is by invitation only. Contact your administrator if you need an account.
-      </p>
+          <p className="max-w-xs text-center text-xs text-foreground/50">
+            Access is by invitation only. Contact your administrator if you need an account.
+          </p>
+        </div>
+
+        <div className="w-full animate-fade-up pb-2 [animation-delay:250ms]">
+          <WorldClockStrip />
+        </div>
+      </div>
     </div>
   )
 }
