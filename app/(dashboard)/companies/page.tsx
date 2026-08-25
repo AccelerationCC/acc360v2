@@ -43,8 +43,20 @@ function CompaniesContent() {
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
-  // Pre-activate Hot List filter when the sidebar nav item passes ?hotlist=1
-  const [hotListOnly, setHotListOnly] = useState(() => searchParams.get('hotlist') === '1')
+  // Hot List filter, preset by the sidebar's ?hotlist=1 link.
+  //
+  // The param has to be tracked, not snapshotted. A useState initialiser runs
+  // once per mount, and "Hot List" and "Target List" are the SAME route with
+  // different search params — so a client-side transition between them does not
+  // remount this component, the initialiser never re-runs, and whichever value
+  // was captured first sticks. That is why both nav items showed an identical
+  // unfiltered list. Syncing on the param keeps nav authoritative while leaving
+  // the chip free to toggle until the next navigation.
+  const hotListParam = searchParams.get('hotlist') === '1'
+  const [hotListOnly, setHotListOnly] = useState(hotListParam)
+  useEffect(() => {
+    setHotListOnly(hotListParam)
+  }, [hotListParam])
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
