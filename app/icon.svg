@@ -1,43 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="ACC360 emblem">
-  <rect width="320" height="320" rx="48" fill="#1F2937"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-label="ACC">
+  <!-- ACC emblem, transparent background: stroked arcs only, no fill behind them.
+       currentColor + a prefers-color-scheme rule so the mark inverts with the
+       browser/OS theme instead of vanishing into a dark or light tab strip. -->
+  <style>
+    svg { color: #F5F1E8; }
+    @media (prefers-color-scheme: light) { svg { color: #1F1F1F; } }
 
-  <g id="emblem" transform="translate(160,160)">
-    <g id="ring-outer" fill="none" stroke="#F5F1E8" stroke-width="5" stroke-linecap="round">
-      <path d="M 10.83,-137.57 A 138,138 0 0,1 127.5,-52.81"/>
-      <path d="M 134.19,-32.22 A 138,138 0 0,1 89.62,104.94"/>
-      <path d="M 72.1,117.66 A 138,138 0 0,1 -72.1,117.66"/>
-      <path d="M -89.62,104.94 A 138,138 0 0,1 -134.19,-32.22"/>
-      <path d="M -127.5,-52.81 A 138,138 0 0,1 -10.83,-137.57"/>
-    </g>
+    /* Counter-rotating rings, mirroring the timings the live emblem uses in
+       ACC360's globals.css so the favicon and the on-page logo move alike.
+       transform-box/origin are required: without them each group would spin
+       around the SVG's top-left corner rather than its own centre.
 
-    <g id="ring-2" fill="none" stroke="#F5F1E8" stroke-width="4" stroke-linecap="round">
-      <path d="M 39.33,-108.06 A 115,115 0 1,1 29.76,-111.08"/>
-    </g>
-
-    <g id="ring-3" fill="none" stroke="#F5F1E8" stroke-width="3.5" stroke-linecap="round">
-      <path d="M 8.28,-94.64 A 95,95 0 0,1 82.27,47.5"/>
-      <path d="M 72.77,61.06 A 95,95 0 0,1 -89.27,32.49"/>
-      <path d="M -93.56,16.5 A 95,95 0 0,1 -8.28,-94.64"/>
-    </g>
-
-    <g id="ring-4" fill="none" stroke="#F5F1E8" stroke-width="3" stroke-linecap="round">
-      <path d="M 13.02,-73.86 A 75,75 0 1,1 0,-75"/>
-    </g>
-
-    <g id="ring-gold" fill="none" stroke="#FFA300" stroke-linecap="round">
-      <path d="M -19.5,53.56 A 57,57 0 0,1 -56.13,9.9" stroke-width="3.5"/>
-      <path d="M -51.66,-24.09 A 57,57 0 0,1 -9.9,-56.13" stroke-width="3.5"/>
-      <path d="M -7.47,42.35 A 43,43 0 0,1 -38.97,18.17" stroke-width="2.5"/>
-    </g>
-
-    <g id="ring-inner">
-      <circle cx="0" cy="0" r="40" fill="none" stroke="#F5F1E8" stroke-width="2.5"/>
-    </g>
-
-    <g id="ring-innermost">
-      <circle cx="0" cy="0" r="27" fill="none" stroke="#F5F1E8" stroke-width="2" opacity="0.65"/>
-    </g>
-
-    <circle id="core" cx="0" cy="0" r="13" fill="#F5F1E8"/>
-  </g>
+       NOTE: tab favicons do not animate in Chrome or Safari — they rasterise a
+       single frame. This animates wherever the file is used as an inline image
+       and degrades to a clean static mark in the tab. */
+    #ring-outer     { animation: cw  40s linear infinite; }
+    #ring-2         { animation: ccw 60s linear infinite; }
+    #ring-3         { animation: cw  35s linear infinite; }
+    #ring-4         { animation: ccw 55s linear infinite; }
+    #ring-gold      { animation: cw  25s linear infinite; }
+    #ring-inner     { animation: ccw 45s linear infinite; }
+    #ring-innermost { animation: cw  70s linear infinite; }
+    #ring-outer, #ring-2, #ring-3, #ring-4,
+    #ring-gold, #ring-inner, #ring-innermost {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    @keyframes cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg);  } }
+    @keyframes ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      #ring-outer, #ring-2, #ring-3, #ring-4,
+      #ring-gold, #ring-inner, #ring-innermost { animation: none; }
+    }
+  </style>
+<g id="emblem" transform="translate(160,160)">
+        <g id="ring-outer" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+          <path d="M 10.83,-137.57 A 138,138 0 0,1 127.5,-52.81"/>
+          <path d="M 134.19,-32.22 A 138,138 0 0,1 89.62,104.94"/>
+          <path d="M 72.1,117.66   A 138,138 0 0,1 -72.1,117.66"/>
+          <path d="M -89.62,104.94 A 138,138 0 0,1 -134.19,-32.22"/>
+          <path d="M -127.5,-52.81 A 138,138 0 0,1 -10.83,-137.57"/>
+        </g>
+        <g id="ring-2" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+          <path d="M 39.33,-108.06 A 115,115 0 1,1 29.76,-111.08"/>
+        </g>
+        <g id="ring-3" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+          <path d="M 8.28,-94.64   A 95,95 0 0,1 82.27,47.5"/>
+          <path d="M 72.77,61.06   A 95,95 0 0,1 -89.27,32.49"/>
+          <path d="M -93.56,16.5   A 95,95 0 0,1 -8.28,-94.64"/>
+        </g>
+        <g id="ring-4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <path d="M 13.02,-73.86 A 75,75 0 1,1 -0.0,-75.0"/>
+        </g>
+        <g id="ring-gold" fill="none" stroke="currentColor" stroke-linecap="round">
+          <path d="M -19.5,53.56   A 57,57 0 0,1 -56.13,9.9"  stroke-width="3.5"/>
+          <path d="M -51.66,-24.09 A 57,57 0 0,1 -9.9,-56.13" stroke-width="3.5"/>
+          <path d="M -7.47,42.35   A 43,43 0 0,1 -38.97,18.17" stroke-width="2.5"/>
+        </g>
+        <g id="ring-inner">
+          <circle cx="0" cy="0" r="40" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        </g>
+        <g id="ring-innermost">
+          <circle cx="0" cy="0" r="27" fill="none" stroke="currentColor" stroke-width="2" opacity="0.65"/>
+        </g>
+        <circle id="core" cx="0" cy="0" r="13" fill="currentColor"/>
+      </g>
 </svg>
