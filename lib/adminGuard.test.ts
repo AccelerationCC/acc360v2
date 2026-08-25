@@ -149,7 +149,8 @@ describe('requireAdmin during the admin → superexec deprecation window', () =>
 // The guard is only worth anything if the write routes actually call it, so
 // these drive the real handlers rather than trusting the wiring.
 describe('company write routes reject an exec', () => {
-  const params = { params: { id: 'recFAKE1234567890' } }
+  // Next 15+ hands route handlers their params as a Promise.
+  const params = { params: Promise.resolve({ id: 'recFAKE1234567890' }) }
 
   it('PATCH .../hotlist ACCEPTS a king, and reaches Airtable', async () => {
     const { PATCH } = await import('../app/api/companies/[id]/hotlist/route')

@@ -1,11 +1,14 @@
+/* Newsroom typography: Inter (body), Space Grotesk (editorial headings),
+   JetBrains Mono (uppercase micro-labels), Instrument Serif (display italic,
+   entrance pages only). Replaces DM Sans / DM Serif Display.
+   Must sit ABOVE the @tailwind directives: they expand to plain CSS rules in
+   the PostCSS pass, and the CSS spec (enforced by Turbopack, tolerated by
+   webpack) requires @import to precede all other rules. */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Newsroom typography: Inter (body), Space Grotesk (editorial headings),
-   JetBrains Mono (uppercase micro-labels), Instrument Serif (display italic,
-   entrance pages only). Replaces DM Sans / DM Serif Display. */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
 
 /* ── Design tokens, translated from client-newsroom's src/styles.css ──
    That app is Tailwind v4 and declares these in an @theme block; this app is

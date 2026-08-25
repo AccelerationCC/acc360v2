@@ -24,10 +24,9 @@ const nextConfig = {
     return [{ source: '/', destination: basePath, permanent: false, basePath: false }]
   },
 
-  experimental: {
-    // Allow the airtable package to run in server components without bundling issues
-    serverComponentsExternalPackages: ['airtable'],
-  },
+  // Allow the airtable package to run in server components without bundling
+  // issues. Top-level since Next 15 (was experimental.serverComponentsExternalPackages).
+  serverExternalPackages: ['airtable'],
 }
 
 export default nextConfig
