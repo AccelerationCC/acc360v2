@@ -8,7 +8,7 @@ import { ensureExecPage } from '@/lib/execGuard'
  * Every dashboard page passes through here, so this is the one place the 360
  * tier is enforced for VIEWING.
  *
- * Before this, there was no such gate: middleware.ts calls auth().protect(),
+ * Before this, there was no such gate: middleware.ts calls auth.protect(),
  * which is authentication only, and the read APIs checked userId alone — so
  * any signed-in account, including `hr` or one with no role at all, could
  * browse the whole dashboard and read real company data. The role model was

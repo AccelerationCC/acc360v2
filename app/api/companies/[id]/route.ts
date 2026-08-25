@@ -4,7 +4,8 @@ import { getCompany, updateCompany, deleteCompany, airtableError } from '@/lib/a
 import { requireAdmin } from '@/lib/adminGuard'
 import { requireExec } from '@/lib/execGuard'
 
-interface Params { params: { id: string } }
+// Next 15+ delivers route params as a Promise; each handler awaits it.
+interface Params { params: Promise<{ id: string }> }
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const { userId } = await auth()
@@ -18,7 +19,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
   if (guard) return guard
 
   try {
-    const company = await getCompany(params.id)
+    const { id } = await params
+    const company = await getCompany(id)
     return NextResponse.json(company)
   } catch (err) {
     console.error('[GET /api/companies/:id]', err)
@@ -31,8 +33,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (guard) return guard
 
   try {
+    const { id } = await params
     const fields = await req.json()
-    const company = await updateCompany(params.id, fields)
+    const company = await updateCompany(id, fields)
     return NextResponse.json(company)
   } catch (err) {
     const { type, message, status } = airtableError(err)
@@ -49,7 +52,8 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   if (guard) return guard
 
   try {
-    await deleteCompany(params.id)
+    const { id } = await params
+    await deleteCompany(id)
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error('[DELETE /api/companies/:id]', err)

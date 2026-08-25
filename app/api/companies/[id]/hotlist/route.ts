@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { setHotList, airtableError } from '@/lib/airtable'
 import { requireAdmin } from '@/lib/adminGuard'
 
-interface Params { params: { id: string } }
+// Next 15+ delivers route params as a Promise; the handler awaits it.
+interface Params { params: Promise<{ id: string }> }
 
 /**
  * Toggle Hot List membership only. The company stays on the target list —
@@ -18,7 +19,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'onHotList must be true or false' }, { status: 400 })
     }
 
-    const company = await setHotList(params.id, onHotList)
+    const { id } = await params
+    const company = await setHotList(id, onHotList)
     return NextResponse.json(company)
   } catch (err) {
     const { type, message, status } = airtableError(err)

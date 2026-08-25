@@ -1,0 +1,42 @@
+name: Security Checks
+
+# Mirrors client-newsroom's security.yml (2026-08-25) so both halves of the
+# acceleration.news deployment carry the same gate. Deliberately no codeql
+# job: code scanning needs GitHub Advanced Security, which this org's private
+# repos don't have — see the removal note in client-newsroom's copy.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * *'  # 06:00 UTC daily
+  workflow_dispatch: {}
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node dependency audit
+        if: hashFiles('package-lock.json') != ''
+        run: npm audit --audit-level=high
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # The gitleaks BINARY, not gitleaks-action@v2. That action requires a
+      # licence key for org-owned repos, and its free tier covers exactly one
+      # repo per organisation. A pinned published image rather than
+      # curl-piping a release tarball keeps this clear of piping fetched
+      # content into a shell. Same pin as client-newsroom.
+      - name: Gitleaks
+        run: >
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.29.0
+          detect --source=/repo --redact --exit-code=1

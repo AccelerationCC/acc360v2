@@ -54,8 +54,9 @@ export async function POST(req: NextRequest) {
   if (guard) return guard
 
   try {
+    const client = await clerkClient()
     const result = await createExecInvitations(parsed.emails, {
-      invitations: clerkClient().invitations as unknown as InvitationsClient,
+      invitations: client.invitations as unknown as InvitationsClient,
       inviterUserId: userId,
       recordAudit: (entry) => recordInviteAudit(entry),
     })
@@ -80,7 +81,8 @@ export async function GET() {
   if (guard) return guard
 
   try {
-    const { data } = await clerkClient().invitations.getInvitationList({
+    const client = await clerkClient()
+    const { data } = await client.invitations.getInvitationList({
       status: 'pending',
       limit: 100,
     })
