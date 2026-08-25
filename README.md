@@ -20,7 +20,17 @@ This is the internal company intelligence platform for The Acceleration Company 
 2. Open your base (the spreadsheet that holds your company data)
 3. Your **Base ID** is in the URL: `airtable.com/`**`appXXXXXXXXXXXX`**`/...`
 4. For your **API Key**: click your profile picture → Account → API → Create a personal access token
-   - Scope: `data.records:read`, `data.records:write`
+   - Scopes: `data.records:read`, `data.records:write`, **`schema.bases:read`**
+   - Access: grant the token **only** the one base above — nothing here reads any other base
+   - `schema.bases:read` is required, not optional. The app reads the table
+     schema to work out which fields are writable before every create and
+     edit. Without it the failure is quiet and confusing rather than a clean
+     error: adding or editing a company shows "Failed to load form fields"
+     and then "No editable fields found", while the Hot List toggle and
+     delete keep working because neither reads the schema.
+   - Do **not** add `schema.bases:write`. Nothing in this app creates or
+     modifies tables or fields, so granting it only widens what a leaked
+     token could do.
 5. Note the exact **Table Name** (e.g., `Companies`) — it must match exactly, including capitalisation
 
 ### Clerk (login system)
