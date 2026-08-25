@@ -7,6 +7,7 @@ import { Input, Textarea, Select } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { PageLoader } from '@/components/ui/LoadingSpinner'
 import { FieldSchema, Company, AirtableFieldValue } from '@/types'
+import { apiFetch } from '@/lib/apiPath'
 
 interface CompanyFormProps {
   company?: Company
@@ -42,7 +43,7 @@ export function CompanyForm({ company }: CompanyFormProps) {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    fetch('/api/airtable/schema')
+    apiFetch('/api/airtable/schema')
       .then((r) => r.json())
       .then((fields: FieldSchema[]) => {
         // Computed fields (formula, rollup, lookup, count, createdTime…) and
@@ -136,9 +137,9 @@ export function CompanyForm({ company }: CompanyFormProps) {
               <input type="checkbox" id={field.name}
                 checked={value === 'true'}
                 onChange={(e) => handleChange(field.name, String(e.target.checked))}
-                className="w-4 h-4 rounded bg-[#111827] border-border text-accent-orange focus:ring-accent-orange"
+                className="w-4 h-4 rounded bg-surface border-border text-acc-blue focus:ring-acc-blue"
               />
-              <label htmlFor={field.name} className="text-sm text-light">{field.name}</label>
+              <label htmlFor={field.name} className="text-sm text-foreground">{field.name}</label>
             </div>
           )
         }
@@ -173,7 +174,7 @@ export function CompanyForm({ company }: CompanyFormProps) {
         <div className="pt-2 border-t border-border">
           <p className="text-xs text-muted">
             Computed in Airtable, not editable here:{' '}
-            <span className="text-light">
+            <span className="text-foreground">
               {readOnlyFields.map((f) => f.name).join(', ')}
             </span>
           </p>

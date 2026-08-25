@@ -8,9 +8,16 @@ export const metadata: Metadata = {
   description: 'Internal company intelligence platform for The Acceleration Company',
 }
 
+// Where Clerk sends a user after sign-in/sign-up. Was hardcoded "/", which is
+// outside the app once basePath is set — every successful sign-in landed on a
+// 404. Next does NOT rewrite these props for basePath (they are strings it
+// never sees as routes), so they have to be built from the same value.
+// Unset basePath keeps the old behaviour exactly: "/".
+const HOME_URL = process.env.NEXT_PUBLIC_BASE_PATH || '/'
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider signInForceRedirectUrl="/" signUpForceRedirectUrl="/">
+    <ClerkProvider signInForceRedirectUrl={HOME_URL} signUpForceRedirectUrl={HOME_URL}>
       <html lang="en" suppressHydrationWarning>
         <body>
           {children}
@@ -19,15 +26,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             gutter={8}
             toastOptions={{
               duration: 4000,
+              // Cream card + dark ink, matching the newsroom's surface card.
               style: {
-                background: '#1F2937',
-                color: '#E5E7EB',
-                border: '1px solid #374151',
-                borderRadius: '8px',
+                background: 'var(--card)',
+                color: 'var(--foreground)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius)',
                 fontSize: '14px',
               },
-              success: { iconTheme: { primary: '#8FB5A8', secondary: '#1F2937' } },
-              error:   { iconTheme: { primary: '#EF4444', secondary: '#1F2937' } },
+              success: { iconTheme: { primary: 'var(--color-acc-blue)', secondary: 'var(--card)' } },
+              error:   { iconTheme: { primary: 'var(--destructive)', secondary: 'var(--card)' } },
             }}
           />
         </body>

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { Flame } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { apiFetch } from '@/lib/apiPath'
 
 interface HotListToggleProps {
   companyId: string
@@ -35,7 +36,7 @@ export function HotListToggle({
   async function handleClick() {
     setSaving(true)
     try {
-      const res = await fetch(`/api/companies/${companyId}/hotlist`, {
+      const res = await apiFetch(`/api/companies/${companyId}/hotlist`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ onHotList: next }),

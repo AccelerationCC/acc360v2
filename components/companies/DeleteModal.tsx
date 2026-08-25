@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { apiFetch } from '@/lib/apiPath'
 
 interface DeleteModalProps {
   companyId: string
@@ -19,7 +20,7 @@ export function DeleteModal({ companyId, companyName, onClose }: DeleteModalProp
   async function handleDelete() {
     setDeleting(true)
     try {
-      const res = await fetch(`/api/companies/${companyId}`, {
+      const res = await apiFetch(`/api/companies/${companyId}`, {
         method: 'DELETE',
       })
 
@@ -39,7 +40,7 @@ export function DeleteModal({ companyId, companyName, onClose }: DeleteModalProp
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#28282b]/80 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()
       }}
@@ -51,12 +52,12 @@ export function DeleteModal({ companyId, companyName, onClose }: DeleteModalProp
         </div>
 
         {/* Copy */}
-        <h2 className="text-lg font-medium text-light text-center mb-2">
+        <h2 className="text-lg font-medium text-foreground text-center mb-2">
           Delete Company
         </h2>
         <p className="text-sm font-light text-muted text-center leading-relaxed">
           Are you sure you want to permanently delete{' '}
-          <span className="font-medium text-light">&ldquo;{companyName}&rdquo;</span>?
+          <span className="font-medium text-foreground">&ldquo;{companyName}&rdquo;</span>?
           This action cannot be undone and will remove the record from Airtable.
         </p>
 

@@ -9,22 +9,32 @@ import {
 import { cn } from '@/lib/utils'
 import type { Newsletter, NewsletterCompanySection } from '@/types/newsletter'
 import type { NewsCategory, NewsArticle, SourceTier } from '@/types/newsroom'
+import { CATEGORY_COLORS, CATEGORY_COLOR_ALL } from '@/components/theme/category-colors'
+import { apiFetch } from '@/lib/apiPath'
 
 // ─── Category meta — single source of truth, mirrors Newsroom.tsx ────────────
 
+// Categorical hues, darkened for the cream page. These are the one place hue
+// carries meaning rather than brand (green = finance, red = reputation), so
+// they are NOT collapsed into the bronze/gold accents — each keeps its hue and
+// is darkened until it clears 4.5:1 as TEXT on the page, which is how it is
+// used (the category label at the bottom of this file sets `color`).
+// Measured against hsl(45 38% 96%): ma 4.63, leadership 4.72, finance 4.60,
+// client 4.81, drama 4.70, award 4.66, general 4.60, all 4.75.
+// The originals measured 1.35–2.58:1 — every one failed.
 const CATEGORY_META: Record<NewsCategory, {
   label: string
   filterLabel: string
   color: string
   Icon: React.ElementType
 }> = {
-  ma:         { label: 'M&A',         filterLabel: 'M&A',         color: '#FFA300', Icon: TrendingUp },
-  leadership: { label: 'Leadership',  filterLabel: 'Leadership',  color: '#7FA6C9', Icon: Users },
-  finance:    { label: 'Finance',     filterLabel: 'Finance',     color: '#8FC7A0', Icon: DollarSign },
-  client:     { label: 'Client Wins', filterLabel: 'Client Wins', color: '#FECD42', Icon: Briefcase },
-  drama:      { label: 'Reputation',  filterLabel: 'Drama',       color: '#D98080', Icon: Flame },
-  award:      { label: 'Awards',      filterLabel: 'Awards',      color: '#C9A6D9', Icon: Award },
-  general:    { label: 'Relevant',    filterLabel: 'General',     color: '#A7BDB1', Icon: Circle },
+  ma:         { label: 'M&A',         filterLabel: 'M&A',         color: CATEGORY_COLORS.ma, Icon: TrendingUp },
+  leadership: { label: 'Leadership',  filterLabel: 'Leadership',  color: CATEGORY_COLORS.leadership, Icon: Users },
+  finance:    { label: 'Finance',     filterLabel: 'Finance',     color: CATEGORY_COLORS.finance, Icon: DollarSign },
+  client:     { label: 'Client Wins', filterLabel: 'Client Wins', color: CATEGORY_COLORS.client, Icon: Briefcase },
+  drama:      { label: 'Reputation',  filterLabel: 'Drama',       color: CATEGORY_COLORS.drama, Icon: Flame },
+  award:      { label: 'Awards',      filterLabel: 'Awards',      color: CATEGORY_COLORS.award, Icon: Award },
+  general:    { label: 'Relevant',    filterLabel: 'General',     color: CATEGORY_COLORS.general, Icon: Circle },
 }
 
 const TIER_LABEL: Record<SourceTier, string> = { t1: 'Tier 1', t2: 'Tier 2', t3: 'Source' }
@@ -80,7 +90,7 @@ function FilterChip({
         'inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-3.5 py-1.5 border transition-all duration-200 active:scale-[0.97]',
         active
           ? 'text-navy border-transparent'
-          : 'text-muted bg-card border-border hover:text-light hover:border-muted',
+          : 'text-muted bg-card border-border hover:text-foreground hover:border-muted',
       )}
       style={active ? { backgroundColor: color } : undefined}
     >
@@ -109,18 +119,18 @@ function ArticleRow({ article: a }: { article: NewsArticle }) {
             {meta.label}
           </span>
           <span className="text-muted">·</span>
-          <span className="font-semibold text-light/80 flex items-center gap-1.5">
+          <span className="font-semibold text-foreground/80 flex items-center gap-1.5">
             {a.source}
             <span className={cn(
               'text-[9.5px] font-bold uppercase tracking-wide px-1.5 py-px rounded',
-              a.tier === 't1' ? 'text-accent-teal bg-accent-teal/10' : 'text-muted bg-light/[0.04]',
+              a.tier === 't1' ? 'text-acc-gold bg-acc-gold/10' : 'text-muted bg-light/[0.04]',
             )}>
               {TIER_LABEL[a.tier]}
             </span>
           </span>
           {a.ageLabel && <><span className="text-muted">·</span><span className="text-muted">{a.ageLabel}</span></>}
         </div>
-        <h4 className="font-serif text-[16px] leading-snug text-light group-hover:text-white transition-colors mb-1">
+        <h4 className="font-editorial text-[16px] leading-snug text-foreground group-hover:text-white transition-colors mb-1">
           {a.title}
         </h4>
         {a.snippet && <p className="text-sm text-muted leading-relaxed">{a.snippet}</p>}
@@ -142,9 +152,9 @@ function CompanySection({
 
   const confidence = result.brief.confidence
   const confColor =
-    confidence === 'HIGH'   ? '#8FC7A0' :
-    confidence === 'MEDIUM' ? '#FECD42' :
-    '#D98080'
+    confidence === 'HIGH'   ? '#3D7A50' :
+    confidence === 'MEDIUM' ? '#896501' :
+    '#C43B3B'
 
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden">
@@ -166,7 +176,7 @@ function CompanySection({
 
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-serif text-lg text-light">{companyName}</span>
+            <span className="font-editorial text-lg text-foreground">{companyName}</span>
             {result.sparse && (
               <span className="text-[10px] font-semibold uppercase tracking-wide text-muted border border-border rounded-full px-2 py-0.5">
                 Sparse
@@ -178,9 +188,9 @@ function CompanySection({
               Confidence
               <b className="font-bold" style={{ color: confColor }}>{confidence}</b>
             </span>
-            <span className="text-border">·</span>
+            <span className="text-foreground/30">·</span>
             <span>{result.brief.sourceCount} source{result.brief.sourceCount !== 1 ? 's' : ''}</span>
-            <span className="text-border">·</span>
+            <span className="text-foreground/30">·</span>
             <span>{result.articles.length} stor{result.articles.length !== 1 ? 'ies' : 'y'}</span>
           </div>
         </div>
@@ -194,12 +204,12 @@ function CompanySection({
         <div className="px-5 pb-5 space-y-4 border-t border-border/40">
           {/* Executive brief */}
           <div className="relative pt-4">
-            <div className="absolute left-0 top-4 bottom-0 w-[2px] bg-gradient-to-b from-accent-orange/60 to-accent-teal/40 rounded" />
+            <div className="absolute left-0 top-4 bottom-0 w-[2px] bg-gradient-to-b from-acc-blue/60 to-acc-gold/40 rounded" />
             <div className="pl-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-accent-orange mb-2">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-acc-blue mb-2">
                 Executive Brief
               </p>
-              <p className="font-serif text-[15px] leading-relaxed text-light">
+              <p className="font-editorial text-[15px] leading-relaxed text-foreground">
                 {result.brief.summary}
               </p>
 
@@ -208,7 +218,7 @@ function CompanySection({
                   {result.brief.flags.map((fl, i) => {
                     const meta = CATEGORY_META[fl.category]
                     return (
-                      <div key={i} className="flex gap-2.5 items-start text-sm text-light/90 leading-snug">
+                      <div key={i} className="flex gap-2.5 items-start text-sm text-foreground/90 leading-snug">
                         <span
                           className="shrink-0 text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border mt-0.5"
                           style={{ color: meta.color, borderColor: `${meta.color}60` }}
@@ -278,7 +288,7 @@ function ArchivePanel({
             onClick={() => toggleWeek(week)}
             className="w-full flex items-center justify-between px-4 py-3 hover:bg-light/[0.02] transition-colors text-left"
           >
-            <span className="text-sm font-medium text-light">{weekLabel(week)}</span>
+            <span className="text-sm font-medium text-foreground">{weekLabel(week)}</span>
             <div className="flex items-center gap-2">
               <span className="text-[11px] text-muted">{dates.length} day{dates.length !== 1 ? 's' : ''}</span>
               {openWeeks.has(week) ? <ChevronUp size={14} className="text-muted" /> : <ChevronDown size={14} className="text-muted" />}
@@ -293,11 +303,11 @@ function ArchivePanel({
                   onClick={() => onSelect(d)}
                   className={cn(
                     'w-full flex items-center justify-between px-4 py-2.5 text-sm text-left transition-colors hover:bg-light/[0.03]',
-                    selectedDate === d ? 'text-accent-orange font-medium' : 'text-muted',
+                    selectedDate === d ? 'text-acc-blue font-medium' : 'text-muted',
                   )}
                 >
                   {formatDateShort(d)}
-                  {selectedDate === d && <span className="text-[10px] text-accent-orange font-bold uppercase tracking-wide">Viewing</span>}
+                  {selectedDate === d && <span className="text-[10px] text-acc-blue font-bold uppercase tracking-wide">Viewing</span>}
                 </button>
               ))}
             </div>
@@ -327,8 +337,8 @@ export default function NewsletterPage() {
   // Load today's (or most recent) newsletter + archive index in parallel
   useEffect(() => {
     Promise.all([
-      fetch('/api/newsletter').then((r) => r.json() as Promise<NewsletterResponse>),
-      fetch('/api/newsletter/archive').then((r) => r.json() as Promise<{ dates: string[] }>),
+      apiFetch('/api/newsletter').then((r) => r.json() as Promise<NewsletterResponse>),
+      apiFetch('/api/newsletter/archive').then((r) => r.json() as Promise<{ dates: string[] }>),
     ]).then(([news, arch]) => {
       setData(news)
       setArchiveDates(arch.dates ?? [])
@@ -338,7 +348,7 @@ export default function NewsletterPage() {
 
   function loadDate(date: string) {
     setLoading(true)
-    fetch(`/api/newsletter?date=${date}`)
+    apiFetch(`/api/newsletter?date=${date}`)
       .then((r) => r.json() as Promise<NewsletterResponse>)
       .then(setData)
       .catch(console.error)
@@ -372,8 +382,8 @@ export default function NewsletterPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-3">
-        <RefreshCw size={22} className="text-accent-orange animate-spin" />
-        <p className="text-sm text-light font-medium">Loading briefing…</p>
+        <RefreshCw size={22} className="text-acc-blue animate-spin" />
+        <p className="text-sm text-foreground font-medium">Loading briefing…</p>
       </div>
     )
   }
@@ -385,10 +395,10 @@ export default function NewsletterPage() {
       <div className="border-b border-border/60 pb-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent-orange mb-1">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-acc-blue mb-1">
               ACC360 Intelligence
             </p>
-            <h1 className="font-serif text-3xl text-light tracking-[0.01em]">
+            <h1 className="font-editorial text-3xl text-foreground tracking-[0.01em]">
               Hot List Daily Brief
             </h1>
             {data && (
@@ -420,14 +430,14 @@ export default function NewsletterPage() {
       {/* ── No newsletter yet ── */}
       {!newsletter && (
         <div className="bg-card border border-border rounded-2xl p-10 text-center">
-          <Newspaper size={32} className="text-accent-orange/40 mx-auto mb-4" />
-          <h2 className="font-serif text-xl text-light mb-2">No briefing available yet</h2>
+          <Newspaper size={32} className="text-acc-blue/40 mx-auto mb-4" />
+          <h2 className="font-editorial text-xl text-foreground mb-2">No briefing available yet</h2>
           <p className="text-sm text-muted max-w-sm mx-auto">
             Today&apos;s brief will appear here after the daily generation runs at ~6am ET.
             Once Vercel KV is provisioned and the cron is active, briefings will accumulate automatically.
           </p>
           <p className="text-xs text-muted/60 mt-4">
-            You can also trigger a manual run at <code className="text-accent-teal">/api/newsletter/generate</code> with the correct <code className="text-accent-teal">CRON_SECRET</code> header.
+            You can also trigger a manual run at <code className="text-acc-gold">/api/newsletter/generate</code> with the correct <code className="text-acc-gold">CRON_SECRET</code> header.
           </p>
         </div>
       )}
@@ -443,14 +453,14 @@ export default function NewsletterPage() {
                 Company
               </div>
               <FilterChip
-                label="All" color="#DFD5CC" active={activeCompany === 'all'}
+                label="All" color={CATEGORY_COLOR_ALL} active={activeCompany === 'all'}
                 count={newsletter.sections.length}
                 onClick={() => setActiveCompany('all')}
               />
               {newsletter.sections.map((s) => (
                 <FilterChip
                   key={s.companyId}
-                  label={s.companyName} color="#A7BDB1"
+                  label={s.companyName} color="#577565"
                   active={activeCompany === s.companyId}
                   onClick={() => setActiveCompany(s.companyId)}
                 />
@@ -464,7 +474,7 @@ export default function NewsletterPage() {
                 Category
               </div>
               <FilterChip
-                label="All" color="#DFD5CC" active={activeCategory === 'all'}
+                label="All" color={CATEGORY_COLOR_ALL} active={activeCategory === 'all'}
                 count={totalArticles}
                 onClick={() => setActiveCategory('all')}
               />
@@ -515,9 +525,9 @@ export default function NewsletterPage() {
           className="w-full flex items-center justify-between px-5 py-4 bg-card border border-border rounded-2xl hover:border-border/80 transition-colors text-left"
         >
           <div className="flex items-center gap-3">
-            <Calendar size={18} className="text-accent-orange" />
+            <Calendar size={18} className="text-acc-blue" />
             <div>
-              <p className="font-serif text-lg text-light">News Archive</p>
+              <p className="font-editorial text-lg text-foreground">News Archive</p>
               <p className="text-xs text-muted mt-0.5">
                 {archiveDates.length === 0
                   ? 'No past briefings yet'

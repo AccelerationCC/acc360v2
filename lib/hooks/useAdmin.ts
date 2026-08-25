@@ -1,9 +1,9 @@
 import { useUser } from '@clerk/nextjs'
 
 /**
- * Returns whether the signed-in user has the admin role.
- * Role is read from Clerk publicMetadata: { role: "admin" }.
- * To grant admin: set publicMetadata.role = "admin" on the user in Clerk Dashboard.
+ * Returns whether the signed-in user has the superexec role.
+ * Role is read from Clerk publicMetadata: { role: "superexec" }.
+ * To grant superexec: set publicMetadata.role = "superexec" on the user in Clerk Dashboard.
  *
  * isLoaded: false while Clerk is still hydrating — callers should render nothing
  * (not a fallback) until isLoaded is true so write controls never flash briefly.
@@ -11,7 +11,7 @@ import { useUser } from '@clerk/nextjs'
 export function useAdmin(): { isAdmin: boolean; isLoaded: boolean } {
   const { user, isLoaded } = useUser()
   return {
-    isAdmin: isLoaded && user?.publicMetadata?.role === 'admin',
+    isAdmin: isLoaded && user?.publicMetadata?.role === 'superexec',
     isLoaded,
   }
 }

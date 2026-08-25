@@ -43,8 +43,8 @@ export function CompanyCard({ company, onHotListChange }: CompanyCardProps) {
   return (
     <div className={cn(
       'group relative bg-card rounded-[10px] border transition-all duration-[2000ms] flex flex-col',
-      'hover:border-[#FFA300]/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20',
-      selected ? 'border-[#FFA300]/60' : onHotList ? 'border-orange-500/40' : 'border-border'
+      'hover:border-acc-blue/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-foreground/5',
+      selected ? 'border-acc-blue/60' : onHotList ? 'border-orange-500/40' : 'border-border'
     )}>
       {onHotList && (
         <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-orange-500/15 text-orange-400 text-[10px] font-medium px-1.5 py-0.5 rounded-full border border-orange-500/25 z-10">
@@ -65,12 +65,15 @@ export function CompanyCard({ company, onHotListChange }: CompanyCardProps) {
               e.currentTarget.onerror = null
               e.currentTarget.src = '/fallback-logo.svg'
             }}
-            className="shrink-0 w-12 h-12 rounded-lg object-contain bg-[#F5F2EF] p-1"
+            /* Plain white, not a palette token: this is a plate behind third-party
+                 logo images, most of which are drawn for white. Against the cream
+                 page the old #F5F2EF was near-invisible as a plate. */
+              className="shrink-0 w-12 h-12 rounded-lg object-contain bg-white p-1"
           />
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-light text-sm leading-snug truncate">{name}</h3>
+            <h3 className="font-medium text-foreground text-sm leading-snug truncate">{name}</h3>
             {vertical && (
-              <span className="inline-block mt-1 text-[11px] px-2 py-0.5 rounded-full bg-[#A7BDB1] text-[#28282b] truncate max-w-full">
+              <span className="inline-block mt-1 text-[11px] px-2 py-0.5 rounded-full bg-muted-ink text-white truncate max-w-full">
                 {vertical}
               </span>
             )}
@@ -115,7 +118,7 @@ export function CompanyCard({ company, onHotListChange }: CompanyCardProps) {
         <div className="flex flex-wrap items-center gap-1.5 pt-3 mt-3 border-t border-border">
           <Link
             href={`/companies/${company.id}`}
-            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-medium bg-[#FFA300]/10 text-[#FFA300] hover:bg-[#FFA300]/20 active:scale-[0.97] transition-all duration-[1200ms]"
+            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-medium bg-acc-blue/10 text-acc-blue hover:bg-acc-blue/20 active:scale-[0.97] transition-all duration-[1200ms]"
           >
             <Globe size={12} />
             View
@@ -125,7 +128,7 @@ export function CompanyCard({ company, onHotListChange }: CompanyCardProps) {
               href={website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-medium text-muted hover:text-light hover:bg-navy active:scale-[0.97] transition-all duration-[1200ms]"
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-medium text-muted hover:text-foreground hover:bg-background active:scale-[0.97] transition-all duration-[1200ms]"
             >
               <ExternalLink size={12} />
               Site
@@ -137,8 +140,8 @@ export function CompanyCard({ company, onHotListChange }: CompanyCardProps) {
             className={cn(
               'w-full sm:flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-medium transition-all duration-[1200ms] active:scale-[0.97]',
               selected
-                ? 'bg-[#FFA300]/15 text-[#FFA300] hover:bg-[#FFA300]/25'
-                : 'text-muted hover:text-light hover:bg-navy',
+                ? 'bg-acc-blue/15 text-acc-blue hover:bg-acc-blue/25'
+                : 'text-muted hover:text-foreground hover:bg-background',
               !canCompare && 'opacity-40 cursor-not-allowed'
             )}
           >

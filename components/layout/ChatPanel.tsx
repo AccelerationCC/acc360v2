@@ -7,6 +7,7 @@ import { cn, generateId } from '@/lib/utils'
 import { useApp } from '@/contexts/AppContext'
 import { useStatusMessages } from '@/lib/hooks/useStatusMessages'
 import { ChatMessage } from '@/types'
+import { apiFetch } from '@/lib/apiPath'
 
 export function ChatPanel() {
   const { chatOpen, toggleChat, allCompanies, companiesReady } = useApp()
@@ -44,7 +45,7 @@ export function ChatPanel() {
     setStreamContent('')
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text }),
@@ -98,7 +99,7 @@ export function ChatPanel() {
     <>
       {/* Mobile backdrop */}
       {chatOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 sm:hidden" onClick={toggleChat} />
+        <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-30 sm:hidden" onClick={toggleChat} />
       )}
 
       {/* Floating trigger button */}
@@ -106,7 +107,7 @@ export function ChatPanel() {
         onClick={toggleChat}
         className={cn(
           'fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 w-13 h-13 p-3.5 rounded-full transition-all duration-[600ms]',
-          'bg-[#FFA300] hover:bg-[#FFB621] hover:shadow-lg hover:shadow-[#FFA300]/30 text-[#28282b] active:scale-95',
+          'bg-acc-blue hover:opacity-90 hover:shadow-lg hover:shadow-acc-blue/30 text-white active:scale-95',
           chatOpen && 'scale-90 opacity-0 pointer-events-none'
         )}
         aria-label="Open AI chat"
@@ -134,16 +135,16 @@ export function ChatPanel() {
 
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border shrink-0">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#FFA300]/10">
-            <Bot size={16} className="text-[#FFA300]" />
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-acc-blue/10">
+            <Bot size={16} className="text-acc-blue" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-light">MOAA</p>
+            <p className="text-sm font-medium text-foreground">MOAA</p>
             <p className="text-xs font-light text-muted truncate">Your trusted AI Assistant.</p>
           </div>
           <button
             onClick={toggleChat}
-            className="p-1 rounded-md text-muted hover:text-light hover:bg-card transition-colors duration-[800ms] shrink-0"
+            className="p-1 rounded-md text-muted hover:text-foreground hover:bg-card transition-colors duration-[800ms] shrink-0"
             aria-label="Close chat"
           >
             <X size={16} />
@@ -154,11 +155,11 @@ export function ChatPanel() {
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && !loading && (
             <div className="flex flex-col items-center justify-center h-full text-center gap-3 py-8">
-              <div className="w-12 h-12 rounded-[10px] bg-[#FFA300]/10 flex items-center justify-center">
-                <Bot size={24} className="text-[#FFA300]" />
+              <div className="w-12 h-12 rounded-[10px] bg-acc-blue/10 flex items-center justify-center">
+                <Bot size={24} className="text-acc-blue" />
               </div>
               <div>
-                <p className="text-sm font-medium text-light">Hey there, I&apos;m MOAA!</p>
+                <p className="text-sm font-medium text-foreground">Hey there, I&apos;m MOAA!</p>
                 <p className="text-xs font-light text-muted mt-1 leading-relaxed">
                   {companiesReady
                     ? `${allCompanies.length} companies loaded. You can ask me just about anything, For example, try: "Which company has the highest revenue?".`
@@ -177,21 +178,21 @@ export function ChatPanel() {
               <div
                 className={cn(
                   'shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mt-0.5',
-                  msg.role === 'user' ? 'bg-[#FFA300]/20' : 'bg-[#A7BDB1]/20'
+                  msg.role === 'user' ? 'bg-acc-blue/20' : 'bg-muted-ink/20'
                 )}
               >
                 {msg.role === 'user' ? (
-                  <User size={13} className="text-[#FFA300]" />
+                  <User size={13} className="text-acc-blue" />
                 ) : (
-                  <Bot size={13} className="text-[#A7BDB1]" />
+                  <Bot size={13} className="text-muted-ink" />
                 )}
               </div>
               <div
                 className={cn(
                   'max-w-[80%] rounded-[10px] px-3 py-2 text-sm leading-relaxed',
                   msg.role === 'user'
-                    ? 'bg-[#FFA300]/10 text-light rounded-tr-sm'
-                    : 'bg-card text-light rounded-tl-sm'
+                    ? 'bg-acc-blue/10 text-foreground rounded-tr-sm'
+                    : 'bg-card text-foreground rounded-tl-sm'
                 )}
               >
                 {msg.role === 'assistant' ? (
@@ -206,14 +207,14 @@ export function ChatPanel() {
           {/* In-progress streaming bubble */}
           {loading && (
             <div className="flex gap-2.5">
-              <div className="shrink-0 w-7 h-7 rounded-lg bg-[#A7BDB1]/20 flex items-center justify-center mt-0.5">
-                <Bot size={13} className="text-[#A7BDB1]" />
+              <div className="shrink-0 w-7 h-7 rounded-lg bg-muted-ink/20 flex items-center justify-center mt-0.5">
+                <Bot size={13} className="text-muted-ink" />
               </div>
-              <div className="max-w-[80%] rounded-[10px] rounded-tl-sm px-3 py-2 bg-card text-light relative">
+              <div className="max-w-[80%] rounded-[10px] rounded-tl-sm px-3 py-2 bg-card text-foreground relative">
                 {streamContent ? (
                   <>
                     <MarkdownContent>{streamContent}</MarkdownContent>
-                    <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[#FFA300] animate-pulse" />
+                    <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-acc-blue animate-pulse" />
                   </>
                 ) : (
                   <div className="flex items-center gap-1.5 text-muted py-0.5">
@@ -240,8 +241,8 @@ export function ChatPanel() {
               rows={1}
               disabled={loading || !companiesReady}
               className={cn(
-                'flex-1 bg-navy border border-border rounded-lg px-3 py-2 text-sm font-light text-light placeholder-muted',
-                'focus:outline-none focus:ring-1 focus:ring-[#FFA300] resize-none min-h-[40px] max-h-[120px] transition-colors duration-[800ms]',
+                'flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm font-light text-foreground placeholder-muted',
+                'focus:outline-none focus:ring-1 focus:ring-acc-blue resize-none min-h-[40px] max-h-[120px] transition-colors duration-[800ms]',
                 'disabled:opacity-50'
               )}
               style={{ height: 'auto' }}
@@ -254,7 +255,7 @@ export function ChatPanel() {
             <button
               onClick={sendMessage}
               disabled={!input.trim() || loading || !companiesReady}
-              className="shrink-0 w-9 h-9 rounded-lg bg-[#FFA300] hover:bg-[#FFB621] text-[#28282b] flex items-center justify-center transition-colors duration-[800ms] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="shrink-0 w-9 h-9 rounded-lg bg-acc-blue hover:opacity-90 text-white flex items-center justify-center transition-colors duration-[800ms] disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="Send message"
             >
               <Send size={15} />
