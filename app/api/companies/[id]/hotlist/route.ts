@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { setHotList, airtableError } from '@/lib/airtable'
 import { requireAdmin } from '@/lib/adminGuard'
+import { hotListSchema, parseMutationBody } from '@/lib/companySchemas'
 
 // Next 15+ delivers route params as a Promise; the handler awaits it.
 interface Params { params: Promise<{ id: string }> }
@@ -14,13 +15,16 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (guard) return guard
 
   try {
-    const { onHotList } = await req.json()
-    if (typeof onHotList !== 'boolean') {
+    // Was a hand-rolled typeof check, which was already correct for the one
+    // field; the schema keeps it that way and strips anything else sent
+    // alongside it.
+    const parsed = parseMutationBody(hotListSchema, await req.json())
+    if (!parsed.ok) {
       return NextResponse.json({ error: 'onHotList must be true or false' }, { status: 400 })
     }
 
     const { id } = await params
-    const company = await setHotList(id, onHotList)
+    const company = await setHotList(id, parsed.data.onHotList)
     return NextResponse.json(company)
   } catch (err) {
     const { type, message, status } = airtableError(err)
