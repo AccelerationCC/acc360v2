@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0",
-    "@clerk/nextjs": "^5.3.3",
+    "@clerk/nextjs": "^6.39.6",
     "@vercel/kv": "^3.0.0",
     "airtable": "^0.12.2",
     "clsx": "^2.1.1",
