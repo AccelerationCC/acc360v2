@@ -104,13 +104,18 @@ export default function ComparePage() {
     return () => document.removeEventListener('mousedown', onClickOutside)
   }, [])
 
-  // Reset evaluation when the set of compared companies changes
+  // Reset evaluation when the set of compared companies changes. During
+  // render, not in an effect: an effect committed a frame in which the previous
+  // companies' evaluation sat under the new selection, which reads as though
+  // the AI had already answered for companies it never saw.
   const idsKey = idsToShow.join(',')
-  useEffect(() => {
+  const [prevIdsKey, setPrevIdsKey] = useState(idsKey)
+  if (idsKey !== prevIdsKey) {
+    setPrevIdsKey(idsKey)
     setEvalState('idle')
     setEvalText('')
     setEvalError('')
-  }, [idsKey])
+  }
 
   const selected = useMemo(
     () => allCompanies.filter((c) => idsToShow.includes(c.id)),

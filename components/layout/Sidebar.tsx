@@ -78,6 +78,7 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
           under /360 by a dev-server proxy, so "/" is the newsroom at the proxy
           root — a client-side route transition would try to resolve it inside
           this app and 404. A full navigation hands it to the proxy. */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- deliberate basePath escape, per the comment above; <Link> would prefix "/" to /360/ and 404. */}
       <a
         href="/"
         className={cn(
