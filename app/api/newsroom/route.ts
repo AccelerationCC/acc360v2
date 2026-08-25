@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { getCompany } from '@/lib/airtable'
 import { getCompanyNews } from '@/lib/newsroom'
 import { getCompanyName, extractUrl } from '@/lib/utils'
+import { requireExec } from '@/lib/execGuard'
 
 // News should always be fresh — never cache this route.
 export const dynamic = 'force-dynamic'
@@ -20,6 +21,14 @@ export const maxDuration = 60 // web search + synthesis can take a while
 export async function GET(req: NextRequest) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // 360 tier, not just a signed-in session — the same gate every sibling read
+  // route carries. This one was missed when the tier was introduced: it returns
+  // real company data from Airtable AND spends a live web-search briefing, so
+  // any signed-in account of any role could both read client data and burn
+  // budget here. Pinned by lib/execGate.test.ts.
+  const guard = await requireExec()
+  if (guard) return guard
 
   const id = req.nextUrl.searchParams.get('id')
   if (!id) {
@@ -56,6 +65,13 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // Same gate as GET, and if anything this path needed it more: the whole
+  // briefing subject comes from the request body, so before this an account of
+  // any role could drive an unbounded number of caller-authored web-search
+  // briefings with no Airtable record required at all.
+  const guard = await requireExec()
+  if (guard) return guard
 
   try {
     const body = await req.json()

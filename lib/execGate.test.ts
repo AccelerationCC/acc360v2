@@ -144,12 +144,19 @@ describe('the dashboard layout actually invokes the gate', () => {
     expect(text).toMatch(/export default async function DashboardLayout/)
   })
 
+  // The list is the pin, so an endpoint MISSING from it is the failure mode
+  // this test has: /api/newsroom (GET and POST) and /api/newsletter/archive
+  // shipped without requireExec for exactly that reason — every sibling was
+  // listed, they were not, and nothing went red. Adding a data-returning or
+  // spend-incurring route to app/api/ means adding it here too.
   it('every read endpoint calls requireExec', async () => {
     const files = [
       '../app/api/companies/route.ts',
       '../app/api/companies/[id]/route.ts',
       '../app/api/chat/route.ts',
       '../app/api/newsletter/route.ts',
+      '../app/api/newsletter/archive/route.ts',
+      '../app/api/newsroom/route.ts',
       '../app/api/airtable/schema/route.ts',
     ]
     for (const f of files) {
