@@ -52,12 +52,12 @@ export function hasExecTier(role: unknown): boolean {
  *
  * Called from (dashboard)/layout.tsx, so it covers every dashboard page in one
  * place and runs BEFORE any content renders. Until this existed, ACC360 had no
- * role gate on viewing at all: middleware.ts only calls auth.protect(), which
+ * role gate on viewing at all: proxy.ts only calls auth.protect(), which
  * is authentication, so any signed-in user — including an `hr` account or one
  * with no role — could browse the whole dashboard and read real company data.
  *
  * Redirects rather than returning a response, because that is how a Server
- * Component refuses. Signed-out users never reach here (middleware sends them
+ * Component refuses. Signed-out users never reach here (the proxy sends them
  * to /sign-in first); this is specifically "signed in, wrong tier".
  */
 export async function ensureExecPage(): Promise<void> {
