@@ -10,6 +10,7 @@ import {
 import { UserButton, useUser } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 import { useApp } from '@/contexts/AppContext'
+import { Wordmark } from './Wordmark'
 import { useAdmin } from '@/lib/hooks/useAdmin'
 
 // useSearchParams requires a Suspense boundary in Next.js 14.
@@ -135,16 +136,10 @@ export function Sidebar() {
         <div className="flex items-center h-16 px-3 border-b border-border shrink-0">
           {sidebarOpen ? (
             <div className="flex-1 min-w-0 overflow-hidden">
-              <p className="flex items-center gap-2 font-sans text-sm font-bold leading-none tracking-[0.35em] text-foreground">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-acc-blue" />
-                ACC
-              </p>
-              <p className="mt-1.5 font-mono text-[9px] uppercase leading-none tracking-[0.28em] text-foreground/50">
-                Intelligence Hub
-              </p>
+              <Wordmark />
             </div>
           ) : (
-            <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-acc-blue" />
+            <Wordmark badgeOnly size={11} />
           )}
           <button
             onClick={toggleSidebar}

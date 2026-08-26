@@ -233,3 +233,45 @@
   #ring-inner     { transform-box: fill-box; transform-origin: center; animation: ring-ccw 45s linear infinite; }
   #ring-innermost { transform-box: fill-box; transform-origin: center; animation: ring-cw  70s linear infinite; }
 }
+
+/* ── THE WORDMARK ─────────────────────────────────────────────────────────
+   DUPLICATE of client-newsroom/src/styles.css (the source of truth) — same
+   discipline as lib/capabilities.ts: two repos, two Vercel projects, no
+   workspace, so ~40 lines are copied rather than published as a package. If
+   the mark changes there, change it here in the same commit.
+
+   Tokens: badge is --color-acc-blue (theme-aware bronze), text and dot are
+   --color-paper, so the block inverts with any future dark theme by
+   inheritance. Measured contrast (light): 5.67:1. */
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34em;
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.wordmark:focus-visible {
+  outline: 2px solid var(--color-acc-blue);
+  outline-offset: 3px;
+  border-radius: 0.16em;
+}
+.wordmark-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.12em 0.32em;
+  border-radius: 0.16em;
+  background: var(--color-acc-blue);
+  color: var(--color-paper);
+}
+.wordmark-dot {
+  width: 0.26em;
+  height: 0.26em;
+  border-radius: 50%;
+  background: var(--color-paper);
+  flex: none;
+}
