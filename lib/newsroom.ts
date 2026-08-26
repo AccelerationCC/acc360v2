@@ -172,6 +172,16 @@ export interface NewsroomDebug {
   toolUseBlocks?: number
   searchResultBlocks?: number
   rawTextLen?: number
+  /** Exact billing figures from the API response. Estimating input tokens from
+   *  character counts was off by an unknown factor — server-side web search
+   *  results are billed as input and accumulate across search iterations within
+   *  a single turn, so the visible output length says nothing about the input
+   *  side. This makes the real number observable per company. */
+  inputTokens?: number
+  outputTokens?: number
+  cacheReadTokens?: number
+  cacheCreationTokens?: number
+  webSearchRequests?: number
   rawSnippet?: string
   parseOk?: boolean
   articleCount?: number
@@ -236,6 +246,11 @@ export async function getCompanyNews(
     debug.toolUseBlocks      = searchUseBlocks
     debug.searchResultBlocks = searchResBlocks
     debug.rawTextLen         = raw.length
+    debug.inputTokens          = response.usage?.input_tokens
+    debug.outputTokens         = response.usage?.output_tokens
+    debug.cacheReadTokens      = response.usage?.cache_read_input_tokens ?? undefined
+    debug.cacheCreationTokens  = response.usage?.cache_creation_input_tokens ?? undefined
+    debug.webSearchRequests    = response.usage?.server_tool_use?.web_search_requests ?? undefined
     debug.rawSnippet         = raw.slice(0, 300).replace(/\n/g, ' ')
     debug.parseOk            = parsed !== null
     debug.articleCount       = Array.isArray(parsed?.articles) ? parsed.articles.length : 0
