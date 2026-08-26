@@ -7,7 +7,7 @@ import {
   Home, Building2, BarChart3, Plus,
   ChevronLeft, ChevronRight, Flame, Newspaper, ArrowLeft,
 } from 'lucide-react'
-import { UserButton, useUser } from '@clerk/nextjs'
+import { UserButton, useClerk } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 import { useApp } from '@/contexts/AppContext'
 import { Wordmark } from './Wordmark'
@@ -118,13 +118,7 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
 
 export function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useApp()
-  const { user } = useUser()
-
-  const displayName =
-    user?.fullName ||
-    user?.firstName ||
-    user?.primaryEmailAddress?.emailAddress?.split('@')[0] ||
-    'User'
+  const { openUserProfile } = useClerk()
 
   return (
     <>
@@ -164,7 +158,21 @@ export function Sidebar() {
           sidebarOpen ? 'gap-3' : 'justify-center',
         )}>
           <UserButton afterSignOutUrl="/sign-in" />
-          {sidebarOpen && <p className="text-xs font-light text-muted truncate">{displayName}</p>}
+          {/* Settings opens Clerk's own profile modal — name, avatar, password.
+              Deliberately NOT a custom settings page: one Clerk instance backs
+              both apps, so whatever changes here persists across the newsroom
+              and /360 for free, and hand-rolling it would re-implement auth
+              surface that is already hardened. The newsroom's header carries
+              the same entry point. */}
+          {sidebarOpen && (
+            <button
+              type="button"
+              onClick={() => openUserProfile()}
+              className="truncate rounded-sm text-xs font-medium text-foreground/60 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acc-blue/70"
+            >
+              Settings
+            </button>
+          )}
         </div>
       </aside>
     </>
