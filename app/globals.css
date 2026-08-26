@@ -330,3 +330,14 @@ html.dark {
   --sidebar-accent: hsl(0 0% 18%);
   --sidebar-border: hsl(45 33% 93% / 10%);
 }
+
+/* The boundary interstitial's fill line (BoundaryTransition.tsx — duplicated
+   from the newsroom). Motion-safe only. */
+@keyframes boundary-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.boundary-fill { animation: boundary-fill linear forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .boundary-fill { animation: none; transform: scaleX(1); }
+}

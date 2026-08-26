@@ -11,6 +11,7 @@ import { UserButton, useUser } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 import { useApp } from '@/contexts/AppContext'
 import { Wordmark } from './Wordmark'
+import { BoundaryTransition } from './BoundaryTransition'
 import { useAdmin } from '@/lib/hooks/useAdmin'
 
 // useSearchParams requires a Suspense boundary in Next.js 14.
@@ -79,18 +80,21 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
           under /360 by a dev-server proxy, so "/" is the newsroom at the proxy
           root — a client-side route transition would try to resolve it inside
           this app and 404. A full navigation hands it to the proxy. */}
-      {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- deliberate basePath escape, per the comment above; <Link> would prefix "/" to /360/ and 404. */}
-      <a
+      {/* BoundaryTransition renders a bare <a href="/"> underneath — the same
+          deliberate basePath escape as before (<Link> would prefix "/" to
+          /360/ and 404) — plus the leaving interstitial. */}
+      <BoundaryTransition
         href="/"
+        message="You are safely being transported back, just a moment."
         className={cn(
           'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-200',
           'text-foreground/60 hover:text-foreground hover:bg-foreground/5',
         )}
-        title={!sidebarOpen ? 'Back to ACC' : undefined}
+        title={!sidebarOpen ? 'Back to the newsroom' : undefined}
       >
         <ArrowLeft size={18} className="shrink-0" />
-        {sidebarOpen && <span className="truncate font-medium">Back to ACC</span>}
-      </a>
+        {sidebarOpen && <span className="truncate font-medium">Back to the newsroom</span>}
+      </BoundaryTransition>
 
       {/* Add Company — admin only */}
       {isAdmin && (
