@@ -275,3 +275,58 @@
   background: var(--color-paper);
   flex: none;
 }
+
+/* ── DARK MODE ────────────────────────────────────────────────────────────
+   The newsroom's dark palette (client-newsroom/src/styles.css :root — that
+   app is dark-first and its `.light` class holds the values above), mirrored
+   here as a `.dark` override since this app is light-first.
+
+   WHY THIS EXISTS. Dark mode "didn't persist" across the /360 boundary
+   because ACC360 never had a dark theme at all: one fixed light palette, no
+   theme classes, no init script, ThemeToggle deliberately omitted. There was
+   nothing to persist INTO. Both apps share an origin in production
+   (www.acceleration.news), so the newsroom's localStorage key is readable
+   here — the init script in app/layout.tsx applies it before paint.
+
+   Every component in this app styles itself through these tokens (tailwind
+   maps its colours to the vars), so overriding the vars is the whole theme —
+   no per-component dark: variants needed. If a token is added to :root above,
+   add its dark value here in the same commit. */
+html.dark {
+  color-scheme: dark;
+
+  --color-acc-blue: hsl(28 55% 49%);
+  --color-acc-gold: hsl(45 33% 93%);
+  --color-surface: hsl(0 0% 18%);
+  --color-paper: hsl(0 0% 14%);
+  --color-ink: hsl(45 33% 93%);
+  --color-bronze: hsl(28 55% 49%);
+  --color-muted-ink: hsl(28 30% 48%);
+
+  --background: hsl(0 0% 14%);
+  --foreground: hsl(45 33% 93%);
+  --card: hsl(0 0% 12%);
+  --card-foreground: hsl(45 33% 93%);
+  --primary: hsl(45 33% 93%);
+  --primary-foreground: hsl(0 0% 14%);
+  --secondary: hsl(0 0% 18%);
+  --secondary-foreground: hsl(45 33% 93%);
+  --muted: hsl(0 0% 18%);
+  --muted-foreground: hsl(28 30% 48%);
+  --accent: hsl(28 55% 49%);
+  --accent-foreground: hsl(0 0% 14%);
+  --border: hsl(45 33% 93% / 10%);
+  --input: hsl(45 33% 93% / 12%);
+  --ring: hsl(28 55% 49%);
+
+  --chart-1: hsl(28 55% 49%);
+  --chart-2: hsl(28 30% 48%);
+  --chart-3: hsl(45 33% 93%);
+  --chart-4: hsl(0 0% 18%);
+  --chart-5: hsl(0 0% 14%);
+
+  --sidebar: hsl(0 0% 14%);
+  --sidebar-foreground: hsl(45 33% 93%);
+  --sidebar-accent: hsl(0 0% 18%);
+  --sidebar-border: hsl(45 33% 93% / 10%);
+}
