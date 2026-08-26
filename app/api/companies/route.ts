@@ -15,10 +15,25 @@ export async function GET() {
   const guard = await requireExec()
   if (guard) return guard
 
-  // Diagnostic: log the env values actually seen at runtime (no secret values)
-  console.log('[/api/companies] AIRTABLE_BASE_ID =', process.env.AIRTABLE_BASE_ID ?? '⚠️ MISSING')
-  console.log('[/api/companies] AIRTABLE_TABLE_NAME =', process.env.AIRTABLE_TABLE_NAME ?? '⚠️ MISSING')
-  console.log('[/api/companies] AIRTABLE_API_KEY prefix =', process.env.AIRTABLE_API_KEY?.slice(0, 16) ?? '⚠️ MISSING')
+  // Diagnostic: whether the Airtable env is present, and nothing more.
+  //
+  // This block used to log the first 16 characters of AIRTABLE_API_KEY on every
+  // companies page load — the hottest path in the app. Sixteen characters is
+  // not a usable key, but it fingerprints the credential precisely enough to
+  // confirm which token an environment holds, which is exactly the capability a
+  // log must not grant. The same pattern was removed from client-newsroom on
+  // 2026-08-26 (PR #25) after a 10-character prefix there was used to identify a
+  // specific production secret without either value being read.
+  //
+  // Presence is kept: "is it set?" is the real diagnostic and the reason the
+  // line was written. Everything past that was a leak with a diagnostic excuse.
+  const envState = (v: string | undefined) => (v ? 'defined' : '⚠️ MISSING')
+  console.log(
+    '[/api/companies] env —',
+    'AIRTABLE_BASE_ID', envState(process.env.AIRTABLE_BASE_ID) + ';',
+    'AIRTABLE_TABLE_NAME', envState(process.env.AIRTABLE_TABLE_NAME) + ';',
+    'AIRTABLE_API_KEY', envState(process.env.AIRTABLE_API_KEY),
+  )
 
   try {
     const companies = await getAllCompanies()
