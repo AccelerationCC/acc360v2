@@ -11,6 +11,12 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
+    // scripts/stranded-branches.ts imports lib/stranded-branches.ts by its
+    // explicit .ts extension, because node runs that script directly and bare
+    // ESM will not resolve an extensionless specifier. Valid only alongside
+    // noEmit (set below), and inert for the Next build, which does its own
+    // transpilation — tsc here only typechecks.
+    "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,

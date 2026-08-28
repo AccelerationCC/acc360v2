@@ -1,0 +1,100 @@
+# Weekly: report branches carrying commits that no open PR is carrying anywhere.
+#
+# The rules live in lib/stranded-branches.ts (unit tested) and the GitHub
+# calls in scripts/stranded-branches.ts. Both are duplicates of the newsroom's
+# copies, which are the source of truth — change both together. This file only schedules them and puts
+# the result somewhere a person will actually see it.
+#
+# WHY AN ISSUE AND NOT A FAILING JOB
+#
+# A red X on a scheduled workflow is the single easiest thing in this repo to
+# start ignoring — MERGE_LOG has a whole section on stale red checks that named
+# a job which no longer existed. A branch sitting unmerged is not a failure, it
+# is a fact that needs a person to decide about, so it goes where decisions get
+# made and gets edited in place rather than reposted.
+#
+# ONE issue, reused. The title is the key: the job finds the open issue with
+# this exact title and edits its body, so the list is always current and the
+# thread keeps whatever discussion has happened on it. When nothing is
+# stranded the issue is closed rather than left open saying "0 branches".
+
+name: Stranded branches
+
+on:
+  schedule:
+    # Mondays, 15:00 UTC — 08:00 Pacific, so it lands at the start of the week
+    # rather than in the middle of Friday.
+    - cron: "0 15 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v4
+        with:
+          # Pinned rather than read from .nvmrc, which this repo does not carry.
+          # 24 matters: the lister is TypeScript run directly by node, which
+          # needs the type-stripping that is unflagged from 23.6 on.
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Find stranded branches
+        id: find
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The script exits 1 when it finds something, which is the signal here
+        # rather than a failure — so the exit code is captured, not inherited.
+        run: |
+          set +e
+          report=$(npm run --silent branches)
+          code=$?
+          set -e
+          {
+            echo "count<<REPORT_EOF"
+            echo "$report"
+            echo "REPORT_EOF"
+            echo "stranded=$code"
+          } >> "$GITHUB_OUTPUT"
+          echo "$report"
+
+      - name: Open, update or close the tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STRANDED: ${{ steps.find.outputs.stranded }}
+          REPORT: ${{ steps.find.outputs.count }}
+          TITLE: "Branches carrying unmerged work"
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --state open --search "$TITLE in:title" \
+            --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
+
+          if [ "$STRANDED" = "0" ]; then
+            if [ -n "$existing" ]; then
+              gh issue close "$existing" \
+                --comment "Nothing is stranded any more — every branch is on the default branch or on an open PR. Reopened automatically if that changes."
+              echo "closed #$existing"
+            else
+              echo "clean, and no issue open"
+            fi
+            exit 0
+          fi
+
+          body=$(printf '%s\n\n---\n\nUpdated by `.github/workflows/stranded-branches.yml` on %s. Run it yourself with `npm run branches`.\n' \
+            "$REPORT" "$(date -u '+%Y-%m-%d')")
+
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body "$body"
+            echo "updated #$existing"
+          else
+            gh issue create --title "$TITLE" --body "$body"
+          fi
