@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "branches": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/stranded-branches.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0",
