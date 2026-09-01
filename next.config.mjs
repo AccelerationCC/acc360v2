@@ -6,6 +6,18 @@
 // `npm run dev` (variable unset) still serves from the root unchanged.
 const basePath = process.env.ACC360_BASE_PATH ?? ''
 
+// IF YOU CHANGE ACC360_BASE_PATH, CHANGE vercel.json BY HAND. The cron entry
+// there hardcodes the literal string `/360/api/newsletter/generate`, because
+// vercel.json is static JSON — it cannot interpolate an environment variable
+// and it cannot hold a comment saying so, which is why this note lives here
+// instead, next to the thing that would move.
+//
+// The two are only equal by convention, and nothing checks the equality. That
+// asymmetry has already cost a day: Vercel Cron requests the path exactly as
+// written, and while the path was the un-prefixed `/api/newsletter/generate`
+// it landed outside the mounted app and returned an instant 404 every morning
+// with no error anywhere — a cron that "ran" and did nothing.
+
 const nextConfig = {
   ...(basePath ? { basePath } : {}),
 
