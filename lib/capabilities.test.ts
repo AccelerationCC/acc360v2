@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   CAPABILITIES,
   type Capability,
-  effectiveCapabilities,
+  capabilitiesForDisplay,
   hasCapability,
   isCapability,
   parseCapabilities,
@@ -194,9 +194,9 @@ describe("crown implies ultra, plus and add", () => {
   });
 });
 
-describe("effectiveCapabilities — for display, never for a gate", () => {
+describe("capabilitiesForDisplay — for display, never for a gate", () => {
   it("expands crown into everything it covers", () => {
-    expect(effectiveCapabilities({ capabilities: ["crown"] })).toEqual([
+    expect(capabilitiesForDisplay({ capabilities: ["crown"] })).toEqual([
       "ultra",
       "plus",
       "add",
@@ -205,12 +205,12 @@ describe("effectiveCapabilities — for display, never for a gate", () => {
   });
 
   it("leaves a non-crown set alone — the control", () => {
-    expect(effectiveCapabilities({ capabilities: ["plus"] })).toEqual(["plus"]);
+    expect(capabilitiesForDisplay({ capabilities: ["plus"] })).toEqual(["plus"]);
   });
 
   it("differs from parseCapabilities on crown, and that is the distinction", () => {
     const meta = { capabilities: ["crown"] };
     expect(parseCapabilities(meta)).toEqual(["crown"]);
-    expect(effectiveCapabilities(meta)).toHaveLength(4);
+    expect(capabilitiesForDisplay(meta)).toHaveLength(4);
   });
 });

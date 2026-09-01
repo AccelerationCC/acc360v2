@@ -135,8 +135,14 @@ export function hasCapability(metadata: unknown, capability: Capability): boolea
 }
 
 /**
- * Everything this metadata grants, implications expanded — for DISPLAY, never
- * for a gate. A gate asks hasCapability about one capability; this answers
+ * Everything this metadata grants, implications expanded — FOR DISPLAY ONLY.
+ *
+ * The constraint is in the NAME, not only in this comment, and that is
+ * deliberate: a comment saying "not for a gate" is checked once by whoever
+ * reads it, whereas `capabilitiesForDisplay` restates the constraint at every
+ * call site forever. A gate calling something named ForDisplay reads wrong on
+ * sight. See issues/029 — a rule that lives only in a comment is a rule
+ * nothing rechecks. A gate asks hasCapability about one capability; this answers
  * "what can this person do", which is a different question and one only a UI
  * asks.
  *
@@ -144,7 +150,7 @@ export function hasCapability(metadata: unknown, capability: Capability): boolea
  * stored"; this one answers "what does it amount to". Conflating them is what
  * puts three capabilities nobody wrote into a page that claims to show Clerk.
  */
-export function effectiveCapabilities(metadata: unknown): Capability[] {
+export function capabilitiesForDisplay(metadata: unknown): Capability[] {
   const held = parseCapabilities(metadata);
   const out = new Set<Capability>(held);
   for (const c of held) for (const implied of IMPLIES[c] ?? []) out.add(implied);
