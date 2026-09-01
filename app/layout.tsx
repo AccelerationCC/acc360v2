@@ -19,6 +19,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider signInForceRedirectUrl={HOME_URL} signUpForceRedirectUrl={HOME_URL}>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          {/* Theme init, blocking, before paint — the same contract as the
+              newsroom's THEME_INIT_SCRIPT: localStorage["acc-theme"] is the
+              single source of truth for both apps (shared origin under
+              www.acceleration.news). The newsroom is dark-first and adds
+              .light when the key is NOT "dark"; this app is light-first and
+              adds .dark when it IS. Same key read two ways, one visual truth:
+              set dark once, anywhere, and both halves honour it. */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){try{if(localStorage.getItem('acc-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}})()`,
+            }}
+          />
+        </head>
         <body>
           {children}
           <Toaster
