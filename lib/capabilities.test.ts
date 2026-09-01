@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   CAPABILITIES,
   type Capability,
+  capabilitiesForDisplay,
   hasCapability,
   isCapability,
   parseCapabilities,
@@ -137,6 +138,79 @@ describe("the capability list itself", () => {
   // Additive by design. Phase 1 ships exactly these two; a later phase adding a
   // third should update this deliberately, in both repos.
   it("is exactly ultra and plus", () => {
-    expect([...CAPABILITIES]).toEqual(["ultra", "plus"]);
+    expect([...CAPABILITIES]).toEqual(["ultra", "plus", "add", "crown"]);
+  });
+});
+
+// ── crown, the implication ─────────────────────────────────────────────────
+//
+// The rule: granting crown means the stored array reads ["crown"] and nothing
+// else, and hasCapability answers true for the three it covers. The failure it
+// exists to prevent is a half-revoked state — ultra/plus/add written INTO the
+// array beside crown, so revoking crown leaves them behind.
+
+describe("crown implies ultra, plus and add", () => {
+  const crownOnly = { capabilities: ["crown"] };
+
+  it.each(["ultra", "plus", "add"] as const)(
+    "grants %s from an array holding only crown",
+    (cap) => {
+      expect(hasCapability(crownOnly, cap)).toBe(true);
+    },
+  );
+
+  it("grants crown itself", () => {
+    expect(hasCapability(crownOnly, "crown")).toBe(true);
+  });
+
+  it("parseCapabilities returns EXACTLY [\"crown\"] — never the expansion", () => {
+    // The pin. If expansion ever migrates into the parser, "what does this user
+    // hold" starts disagreeing with what Clerk actually stores, and a revoke
+    // looks like it left three capabilities behind.
+    expect(parseCapabilities(crownOnly)).toEqual(["crown"]);
+  });
+
+  it("REMOVING crown removes all four — the whole point", () => {
+    // The control for the tests above. If the grants came from the array rather
+    // than the implication, this is where it would show: they would survive.
+    const revoked = { capabilities: [] };
+    for (const cap of CAPABILITIES) expect(hasCapability(revoked, cap)).toBe(false);
+  });
+
+  it("does not work in reverse — add does not imply crown", () => {
+    const addOnly = { capabilities: ["add"] };
+    expect(hasCapability(addOnly, "add")).toBe(true);
+    expect(hasCapability(addOnly, "crown")).toBe(false);
+    expect(hasCapability(addOnly, "ultra")).toBe(false);
+    expect(hasCapability(addOnly, "plus")).toBe(false);
+  });
+
+  it("a KING with no capabilities still gets add — no, it does not", () => {
+    // The equivalent of the existing plus assertion, for add. Tiers grant no
+    // capability, and there is deliberately no king shortcut anywhere.
+    expect(hasCapability({ role: "king", capabilities: [] }, "add")).toBe(false);
+    expect(hasCapability({ role: "king" }, "add")).toBe(false);
+    expect(hasCapability({ role: "king", capabilities: ["crown"] }, "add")).toBe(true);
+  });
+});
+
+describe("capabilitiesForDisplay — for display, never for a gate", () => {
+  it("expands crown into everything it covers", () => {
+    expect(capabilitiesForDisplay({ capabilities: ["crown"] })).toEqual([
+      "ultra",
+      "plus",
+      "add",
+      "crown",
+    ]);
+  });
+
+  it("leaves a non-crown set alone — the control", () => {
+    expect(capabilitiesForDisplay({ capabilities: ["plus"] })).toEqual(["plus"]);
+  });
+
+  it("differs from parseCapabilities on crown, and that is the distinction", () => {
+    const meta = { capabilities: ["crown"] };
+    expect(parseCapabilities(meta)).toEqual(["crown"]);
+    expect(capabilitiesForDisplay(meta)).toHaveLength(4);
   });
 });
