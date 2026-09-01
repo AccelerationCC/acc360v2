@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { getAllCompanies, createCompany, airtableError } from '@/lib/airtable'
 import { requireAdmin } from '@/lib/adminGuard'
 import { requireExec } from '@/lib/execGuard'
+import { companyFieldsSchema, parseMutationBody } from '@/lib/companySchemas'
 
 export async function GET() {
   const { userId } = await auth()
@@ -62,8 +63,14 @@ export async function POST(req: NextRequest) {
   if (guard) return guard
 
   try {
-    const fields = await req.json()
-    const company = await createCompany(fields)
+    // Shape and size validation BEFORE Airtable. writableOnly() already drops
+    // non-writable field names inside createCompany; this covers the other
+    // axis — value types and payload size — so a nested object or a payload
+    // bomb is refused here rather than forwarded upstream and billed.
+    const parsed = parseMutationBody(companyFieldsSchema, await req.json())
+    if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
+
+    const company = await createCompany(parsed.data)
     return NextResponse.json(company, { status: 201 })
   } catch (err) {
     const { type, message, status } = airtableError(err)

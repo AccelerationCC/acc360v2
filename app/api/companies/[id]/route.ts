@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { getCompany, updateCompany, deleteCompany, airtableError } from '@/lib/airtable'
 import { requireAdmin } from '@/lib/adminGuard'
 import { requireExec } from '@/lib/execGuard'
+import { companyFieldsSchema, parseMutationBody } from '@/lib/companySchemas'
 
 // Next 15+ delivers route params as a Promise; each handler awaits it.
 interface Params { params: Promise<{ id: string }> }
@@ -34,8 +35,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   try {
     const { id } = await params
-    const fields = await req.json()
-    const company = await updateCompany(id, fields)
+    // Same shape/size gate as POST — see lib/companySchemas.ts.
+    const parsed = parseMutationBody(companyFieldsSchema, await req.json())
+    if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
+
+    const company = await updateCompany(id, parsed.data)
     return NextResponse.json(company)
   } catch (err) {
     const { type, message, status } = airtableError(err)
