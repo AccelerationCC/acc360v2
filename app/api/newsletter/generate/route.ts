@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAllCompanies } from '@/lib/airtable'
 import { getCompanyNews } from '@/lib/newsroom'
 import type { NewsroomDebug } from '@/lib/newsroom'
-import { saveNewsletter } from '@/lib/kv'
+import { getNewsletter, saveNewsletter } from '@/lib/kv'
+import { isForceRequested, shouldRefuseGeneration } from '@/lib/newsletterGuard'
 import { getCompanyName, extractUrl } from '@/lib/utils'
 import type { Newsletter, NewsletterCompanySection } from '@/types/newsletter'
 
@@ -40,6 +41,39 @@ export async function GET(req: NextRequest) {
   }
 
   const today = new Date().toISOString().slice(0, 10)
+
+  // IDEMPOTENCY GUARD. Refuse if today's newsletter already exists.
+  //
+  // Provenance: on 2026-09-01 this endpoint was called twice while verifying
+  // that the cron path needed its /360 prefix — 18:50:55 and 18:52:00, both
+  // 200, both completing all eight briefs. The second run overwrote the first
+  // and the two disagreed: 3CV 6 articles vs 8, Erich & Kallman 6 vs 8, LV8
+  // 5 vs 6, Hello There Collective 4 vs 5, with different prose throughout.
+  // Nothing in the route objected, because nothing asked.
+  //
+  // 409, not a silent 200: a second call in the same day is not normal
+  // operation and should be visible in the logs rather than swallowed. In
+  // ordinary daily operation this branch never runs.
+  //
+  // FAILS OPEN BY DESIGN. getNewsletter swallows its errors and returns null,
+  // so a KV outage reads as "nothing generated yet" and the run proceeds. That
+  // is the deliberate direction: for a once-a-day newsletter, regenerating on a
+  // KV blip is a smaller loss than skipping the day entirely. The guard stops
+  // accidents, and is not a mutual exclusion lock — two calls racing inside the
+  // same ~60s window can both pass it.
+  const force = isForceRequested(req.nextUrl.searchParams.get('force'))
+  const alreadyExists = force ? false : Boolean(await getNewsletter(today))
+  if (shouldRefuseGeneration({ force, alreadyExists })) {
+    console.warn(`[newsletter/generate] refused: newsletter:${today} already exists`)
+    return NextResponse.json(
+      {
+        error: 'Already generated',
+        date: today,
+        hint: 'Pass ?force=1 to regenerate and overwrite.',
+      },
+      { status: 409 },
+    )
+  }
 
   try {
     const all = await getAllCompanies()
