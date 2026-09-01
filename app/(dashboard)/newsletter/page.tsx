@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 import type { Newsletter, NewsletterCompanySection } from '@/types/newsletter'
 import type { NewsCategory, NewsArticle, SourceTier } from '@/types/newsroom'
 import { CATEGORY_COLORS, CATEGORY_COLOR_ALL } from '@/components/theme/category-colors'
-import { apiFetch } from '@/lib/apiPath'
+import { apiFetch, apiUrl } from '@/lib/apiPath'
 
 // ─── Category meta — single source of truth, mirrors Newsroom.tsx ────────────
 
@@ -437,7 +437,7 @@ export default function NewsletterPage() {
             Once Vercel KV is provisioned and the cron is active, briefings will accumulate automatically.
           </p>
           <p className="text-xs text-muted/60 mt-4">
-            You can also trigger a manual run at <code className="text-acc-gold">/api/newsletter/generate</code> with the correct <code className="text-acc-gold">CRON_SECRET</code> header.
+            You can also trigger a manual run at <code className="text-acc-gold">{apiUrl('/api/newsletter/generate')}</code> with the correct <code className="text-acc-gold">CRON_SECRET</code> header.
           </p>
         </div>
       )}
