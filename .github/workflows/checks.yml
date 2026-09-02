@@ -1,0 +1,155 @@
+name: Checks
+
+# WHY THIS EXISTS
+#
+# Until this file, CI on this repo ran `dependency-audit`, `secret-scan` and a
+# Vercel build, and nothing else. No typecheck, no tests, no lint — while the
+# repo carried 187 tests that ran nowhere but a laptop.
+#
+# So "green" meant: no known-vulnerable dependency, no committed secret, and
+# `next build` compiles. A reader glancing at a PR would reasonably assume it
+# meant more than that, and every test-shaped guard here was decorative:
+#
+#   lib/execGate.test.ts        the role boundaries, including "an hr account is
+#                               denied /api/newsletter" — a security assertion
+#   lib/adminGuard.test.ts      the admin boundary
+#   lib/capabilities.test.ts    the add/crown capability model, mirrored from
+#                               the newsroom and expected to stay in step
+#   lib/apiPath.test.ts         fails if a raw fetch('/api/…') appears, which is
+#                               a real bug under basePath /360
+#   lib/newsletterGuard.test.ts the idempotency guard that stops the newsletter
+#                               being generated twice over the top of itself
+#
+# Each was written as "this fails the moment someone…". None of them did. This
+# job is what makes that sentence true. It mirrors the newsroom's Checks
+# workflow deliberately, so the two repos fail the same way.
+#
+# NO DATABASE, AND NOTHING TO STUB
+#
+# Unlike the newsroom this app has no Prisma and no DATABASE_URL — it stores in
+# Airtable and Vercel KV, and every test that touches either mocks it (see the
+# vi.mock calls in lib/newsletterTemplate.test.ts and lib/execGate.test.ts). So
+# this job needs no secrets, no service container and no network beyond npm. A
+# test that suddenly needs a live credential is a conversation about the test.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+# A newer push to the same PR cancels the older run rather than queueing behind
+# it — the older result is about code nobody will merge.
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: types, tests, lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Node comes from .nvmrc, added with this job because the repo declared
+      # its version nowhere. 24 matches what Vercel builds acc360v2 with
+      # (project nodeVersion 24.x, read from the API). The newsroom learned this
+      # the expensive way: its first Checks run used Node 22 against a lockfile
+      # resolved by another npm major and `npm ci` failed outright. Pinning to
+      # the same version the deploy uses avoids reproducing that here.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        id: install
+        run: npm ci
+
+      - name: Typecheck
+        id: tsc
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          set -o pipefail
+          npx tsc --noEmit --pretty false 2>&1 | tee /tmp/tsc.log
+
+      # `--reporter=github-actions` turns each failure into an inline annotation
+      # on the offending line, so a failure is one click rather than a scroll
+      # through passing output. The default reporter runs alongside for the log.
+      - name: Tests
+        id: tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx vitest run --reporter=default --reporter=github-actions
+
+      # WHOLE REPO, and that is a real difference from the newsroom's job, which
+      # lints only changed files because it carries ~800 pre-existing violations
+      # that would make a repo-wide gate permanently red. `eslint .` is clean
+      # here today, so the stronger gate is available and is used.
+      #
+      # If violations ever accumulate, the fix is to clear them — NOT to quietly
+      # narrow this to changed files. Narrowing it would be indistinguishable
+      # from the job still working, which is the failure this whole file exists
+      # to prevent.
+      - name: Lint
+        id: lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm run lint
+
+      # Runs whatever happened above, so the PR page shows WHICH step failed
+      # without opening the log. A red X that does not say what is red is the
+      # thing this job exists to avoid.
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Checks"
+            echo ""
+            echo "| Step | Result |"
+            echo "| --- | --- |"
+            echo "| Install (\`npm ci\`) | ${{ steps.install.outcome == 'success' && '✅ pass' || '❌ **fail**' }} |"
+            echo "| Typecheck (\`tsc --noEmit\`) | ${{ steps.tsc.outcome == 'success' && '✅ pass' || '❌ **fail**' }} |"
+            echo "| Tests (\`vitest run\`) | ${{ steps.tests.outcome == 'success' && '✅ pass' || '❌ **fail**' }} |"
+            echo "| Lint (\`eslint .\`) | ${{ steps.lint.outcome == 'success' && '✅ pass' || '❌ **fail**' }} |"
+            echo ""
+            if [ "${{ steps.tsc.outcome }}" != "success" ] && [ -s /tmp/tsc.log ]; then
+              echo "<details><summary>Typecheck errors</summary>"
+              echo ""
+              echo '```'
+              head -40 /tmp/tsc.log
+              echo '```'
+              echo ""
+              echo "</details>"
+            fi
+            if [ "${{ steps.tests.outcome }}" != "success" ]; then
+              echo "Failing tests are annotated inline on the diff — look for the red markers rather than reading the log."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # A step whose only job is to be red when any earlier step was. Without
+      # it, `if: always()` on the steps above would let the job pass while
+      # carrying a failure.
+      - name: Fail if any check failed
+        if: always()
+        run: |
+          fail=0
+          # Install is checked FIRST and explicitly: if it fails, every step
+          # below is SKIPPED, and a rule that treats "skipped" as acceptable
+          # would call that a pass. That is not hypothetical — it is exactly
+          # what happened on the newsroom's first run of this job.
+          if [ "${{ steps.install.outcome }}" != "success" ]; then
+            echo "::error::Install failed — nothing downstream ran."
+            exit 1
+          fi
+          for s in "${{ steps.tsc.outcome }}" "${{ steps.tests.outcome }}" "${{ steps.lint.outcome }}"; do
+            [ "$s" = "success" ] || fail=1
+          done
+          if [ "$fail" = "1" ]; then
+            echo "::error::One or more checks failed — see the job summary."
+            exit 1
+          fi
+          echo "All checks passed."
