@@ -7,10 +7,41 @@ import { isForceRequested, shouldRefuseGeneration } from '@/lib/newsletterGuard'
 import { getCompanyName, extractUrl } from '@/lib/utils'
 import type { Newsletter, NewsletterCompanySection } from '@/types/newsletter'
 
-// Vercel Hobby plan maximum for serverless functions is 60 seconds.
-// 8 sequential web searches (~20s each) would exceed that, so companies run in parallel
-// via Promise.allSettled — same per-company resilience as sequential, fits within 60s.
-export const maxDuration = 60
+// 300s, matching the project's own functionDefaultTimeout. The previous value
+// was 60, and it was not a considered ceiling — it came from a comment reading
+// "Vercel Hobby plan maximum for serverless functions is 60 seconds", which was
+// wrong twice over: this team is on Pro, and Hobby's limit is 300s now too. So
+// the line was overriding the platform default DOWNWARDS, and nothing rechecked
+// the premise after it stopped being true (issues/029).
+//
+// Read from the docs and the API on 2026-09-02 rather than assumed:
+//   plan                pro
+//   fluid compute       enabled
+//   functionDefaultTimeout  300
+//   Pro maximum         800s generally available; 1800s only via the
+//                       per-function extended-duration beta, which this does
+//                       not need
+//
+// WHY 300 AND NOT 800. Measured, not guessed. Across three runs (24 company
+// briefs) the slowest company that COMPLETED took 51.1s, and the whole job runs
+// them in parallel, so wall time is roughly the slowest one plus overhead:
+//
+//   2026-09-01 18:50:55   200   slowest 45.0s
+//   2026-09-01 18:52:00   200   slowest 51.1s   <- 8.9s under the old wall
+//   2026-09-02 11:00:05   504   7 of 8 done, Prosper Brands never returned
+//
+// 300s is ~5.9x the slowest observed completion. That is real headroom without
+// giving a genuinely hung run thirteen minutes to burn before anyone hears
+// about it — a timeout that never fires stops being a signal. Fluid compute
+// bills active CPU and these searches are I/O-bound, so the higher ceiling
+// costs nothing unless it is actually used.
+//
+// THIS RAISES THE CEILING; IT DOES NOT MAKE THE JOB RELIABLE. The duration
+// varies run to run for the same eight companies, which is the same
+// non-determinism that makes the briefs unreproducible — see client-newsroom
+// issues/034 and 031. A deterministic Perigon call is the actual fix; this
+// stops the symptom killing the job in the meantime.
+export const maxDuration = 300
 export const dynamic = 'force-dynamic'
 
 // Fires at 11:00 UTC = 6am EST (winter) / 7am EDT (summer). Vercel Cron does not
