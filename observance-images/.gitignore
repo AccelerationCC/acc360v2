@@ -1,0 +1,6 @@
+# The images are the input to an upload, not repo content. The blob store is the
+# artefact. Committing them would double the repo size and create a second source
+# of truth for what is live.
+*
+!.gitignore
+!README.md
