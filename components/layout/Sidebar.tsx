@@ -85,10 +85,10 @@ function NavItems({ sidebarOpen }: { sidebarOpen: boolean }) {
           'flex items-center gap-3 px-2 py-2 rounded-full text-sm transition-colors duration-200',
           'text-foreground/60 hover:text-foreground hover:bg-foreground/5',
         )}
-        title={!sidebarOpen ? 'Back to ACC' : undefined}
+        title={!sidebarOpen ? 'Back to Newsroom' : undefined}
       >
         <ArrowLeft size={18} className="shrink-0" />
-        {sidebarOpen && <span className="truncate font-medium">Back to ACC</span>}
+        {sidebarOpen && <span className="truncate font-medium">Back to Newsroom</span>}
       </a>
 
       {/* Add Company — admin only */}
@@ -135,12 +135,16 @@ export function Sidebar() {
         <div className="flex items-center h-16 px-3 border-b border-border shrink-0">
           {sidebarOpen ? (
             <div className="flex-1 min-w-0 overflow-hidden">
-              <p className="flex items-center gap-2 font-sans text-sm font-bold leading-none tracking-[0.35em] text-foreground">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-acc-blue" />
-                ACC
-              </p>
-              <p className="mt-1.5 font-mono text-[9px] uppercase leading-none tracking-[0.28em] text-foreground/50">
-                Intelligence Hub
+              {/* ONE NAME. This header used to read "ACC" over an
+                  "Intelligence Hub" tagline, while the homepage said
+                  "Acceleration's Intelligence Hub", the logo said "ACC360" and
+                  the newsletter said "ACC360 Intelligence" — four names for one
+                  product across six surfaces. The tagline is deliberately gone
+                  rather than rewritten: a second line here is a second string
+                  to keep in sync, which is how the drift started. */}
+              <p className="flex items-center gap-2 font-sans text-sm font-bold leading-none tracking-[0.28em] text-foreground">
+                <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-acc-blue" />
+                ACC360
               </p>
             </div>
           ) : (

@@ -104,7 +104,7 @@ export default function HomePage() {
           </div>
 
           <p className="font-light text-muted mb-8 sm:mb-10 text-base sm:text-lg">
-            Welcome to Acceleration&apos;s Intelligence Hub
+            Welcome to ACC360
           </p>
 
           <div className="relative flex items-end gap-2 bg-card border border-border rounded-[10px] p-3 focus-within:border-acc-blue/50 transition-colors duration-[1200ms]">
