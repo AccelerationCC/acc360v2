@@ -28,7 +28,7 @@ import type { Newsletter, NewsletterCompanySection } from '@/types/newsletter'
 //
 //   2026-09-01 18:50:55   200   slowest 45.0s
 //   2026-09-01 18:52:00   200   slowest 51.1s   <- 8.9s under the old wall
-//   2026-09-02 11:00:05   504   7 of 8 done, Prosper Brands never returned
+//   2026-09-02 11:00:05   504   7 of 8 done, the eighth never returned
 //
 // 300s is ~5.9x the slowest observed completion. That is real headroom without
 // giving a genuinely hung run thirteen minutes to burn before anyone hears
@@ -78,8 +78,8 @@ export async function GET(req: NextRequest) {
   // Provenance: on 2026-09-01 this endpoint was called twice while verifying
   // that the cron path needed its /360 prefix — 18:50:55 and 18:52:00, both
   // 200, both completing all eight briefs. The second run overwrote the first
-  // and the two disagreed: 3CV 6 articles vs 8, Erich & Kallman 6 vs 8, LV8
-  // 5 vs 6, Hello There Collective 4 vs 5, with different prose throughout.
+  // and the two disagreed on four of the eight companies: 6 articles vs 8,
+  // 5 vs 6, 6 vs 8, and 4 vs 5, with different prose throughout.
   // Nothing in the route objected, because nothing asked.
   //
   // 409, not a silent 200: a second call in the same day is not normal
