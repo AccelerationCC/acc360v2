@@ -11,6 +11,30 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 <!-- Everything below is hand-written and sits OUTSIDE the generated block
      above, which `next dev` rewrites between its BEGIN/END markers. -->
 
+## Agent session memory is keyed by the directory you start in
+
+The key is the absolute cwd with `/` **and spaces** replaced by `-`, so
+`/Users/<you>/Code/MOAA-merged` keys to `-Users-<you>-Code-MOAA-merged` under
+`~/.claude/projects/`. A session started from `$HOME` keys somewhere else
+entirely and **loads different memory** — same machine, same repo, different
+rules.
+
+Verified from recorded session `cwd` values rather than assumed. Two
+directories whose names differ only by a space vs a hyphen collide onto one key.
+
+On a machine where the memory lives under the `$HOME` key, symlink it into the
+repo key so both resolve to one copy rather than two that drift:
+
+```sh
+ln -s ~/.claude/projects/-Users-<you>/memory \
+      ~/.claude/projects/-Users-<you>-Code-MOAA-merged/memory
+```
+
+**Symlinks are machine-local. Redo this after any move, rename, or new laptop** —
+that is exactly how a set of working rules went missing on 2026-09-08, and the
+symptom was not an error but silence: the session simply had no memory and no
+way to know it was supposed to.
+
 ## Checks
 
 Run all three before opening a PR. Every one must exit 0.
