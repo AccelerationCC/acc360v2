@@ -52,3 +52,46 @@ Until 2026-09-01 this repo had no such job at all. CI was `dependency-audit`,
 no committed secret, and `next build` compiles" — while 187 tests ran nowhere but
 a laptop. Every test-shaped guard here, including the role boundaries in
 `lib/execGate.test.ts`, was decorative. See the header of `checks.yml`.
+
+## Two GitHub accounts — and a 404 that reads as a typo
+
+Two accounts exist. **Only `yuvrajsinghacc` can see both
+`AccelerationCC/acc360v2` and `AccelerationCC/client-newsroom`.** The other one
+authenticates fine and then cannot find the repos.
+
+**The failure is misleading, which is the whole problem.** GitHub returns **404,
+not 403**, for a private repo the caller is not authorised to see — disclosing
+"this repo exists but you may not have it" would itself be a leak. So the wrong
+account does not say *you lack access*. It says the repo **does not exist**:
+
+```
+gh: Not Found (HTTP 404)
+```
+
+That reads as a misspelled repo name. The hour goes into checking the spelling,
+the owner, the case, whether the repo was renamed or archived — every hypothesis
+except the account, because nothing in the message points at auth.
+
+**`gh auth status` does not settle it.** It reports who is logged in, not what
+they can reach. A green "Logged in to github.com account …" is compatible with
+404 on every repo you care about.
+
+**The rule: prove access against the repo itself, not against the session.**
+
+```
+gh api repos/<owner>/<repo> --jq .permissions
+```
+
+The tell:
+
+```
+{"admin":true,"maintain":true,"pull":true,"push":true,"triage":true}   <- right account
+gh: Not Found (HTTP 404)                                              <- WRONG ACCOUNT, not a bad name
+```
+
+A 404 from that call, on a name you can otherwise confirm, means the account —
+not the spelling. Switch with `gh auth switch` and re-run before touching
+anything else.
+
+Verified 2026-09-08 on a fresh machine: `yuvrajsinghacc` returns the permissions
+object above for both repos. The same section is in client-newsroom's `AGENTS.md`.
