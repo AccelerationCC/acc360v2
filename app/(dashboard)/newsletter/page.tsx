@@ -396,7 +396,7 @@ export default function NewsletterPage() {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-acc-blue mb-1">
-              ACC360 Intelligence
+              ACC360
             </p>
             <h1 className="font-editorial text-3xl text-foreground tracking-[0.01em]">
               Hot List Daily Brief

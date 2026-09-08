@@ -10,7 +10,7 @@ export function AccLogo({ className }: { className?: string }) {
     <svg
       viewBox="0 0 745 320"
       className={`text-foreground${className ? ` ${className}` : ""}`}
-      aria-label="ACC360 — Acceleration Community of Companies"
+      aria-label="ACC360"
       role="img"
     >
       <g id="emblem" transform="translate(160,160)">
