@@ -43,12 +43,12 @@ export default function NoAccess() {
             href="/"
             className="inline-flex items-center gap-2 rounded-full bg-acc-blue px-5 py-2.5 text-xs font-bold text-white transition-opacity hover:opacity-90"
           >
-            Back to Client Newsroom
+            Back to Newsroom
           </a>
         </div>
 
         <footer className="pb-2 text-center font-mono text-[9px] uppercase tracking-[0.3em] text-foreground/25">
-          ACC360 · ACC
+          ACC360
         </footer>
       </div>
     </div>
