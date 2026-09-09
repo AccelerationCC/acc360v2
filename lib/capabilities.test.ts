@@ -135,24 +135,29 @@ describe("isCapability", () => {
 });
 
 describe("the capability list itself", () => {
-  // Additive by design. Phase 1 ships exactly these two; a later phase adding a
-  // third should update this deliberately, in both repos.
-  it("is exactly ultra and plus", () => {
-    expect([...CAPABILITIES]).toEqual(["ultra", "plus", "add", "crown"]);
+  // Additive by design. A later phase adding another should update this
+  // deliberately, in both repos. `crown` is in the list because it IS a
+  // capability someone is granted — what makes it different is that
+  // hasCapability expands it, not that it is stored differently.
+  //
+  // `learn` is last, and crown DOES cover it — since 2026-09-09, and not
+  // before. The crown block below carries the reversal and what it rests on.
+  it("is exactly ultra, plus, add, crown and learn", () => {
+    expect([...CAPABILITIES]).toEqual(["ultra", "plus", "add", "crown", "learn"]);
   });
 });
 
 // ── crown, the implication ─────────────────────────────────────────────────
 //
 // The rule: granting crown means the stored array reads ["crown"] and nothing
-// else, and hasCapability answers true for the three it covers. The failure it
-// exists to prevent is a half-revoked state — ultra/plus/add written INTO the
-// array beside crown, so revoking crown leaves them behind.
+// else, and hasCapability answers true for the four it covers. The failure it
+// exists to prevent is a half-revoked state — ultra/plus/add/learn written INTO
+// the array beside crown, so revoking crown leaves them behind.
 
-describe("crown implies ultra, plus and add", () => {
+describe("crown implies ultra, plus, add and learn", () => {
   const crownOnly = { capabilities: ["crown"] };
 
-  it.each(["ultra", "plus", "add"] as const)(
+  it.each(["ultra", "plus", "add", "learn"] as const)(
     "grants %s from an array holding only crown",
     (cap) => {
       expect(hasCapability(crownOnly, cap)).toBe(true);
@@ -170,7 +175,7 @@ describe("crown implies ultra, plus and add", () => {
     expect(parseCapabilities(crownOnly)).toEqual(["crown"]);
   });
 
-  it("REMOVING crown removes all four — the whole point", () => {
+  it("REMOVING crown removes all five — the whole point", () => {
     // The control for the tests above. If the grants came from the array rather
     // than the implication, this is where it would show: they would survive.
     const revoked = { capabilities: [] };
@@ -194,6 +199,59 @@ describe("crown implies ultra, plus and add", () => {
   });
 });
 
+
+// ── learn, AND WHAT crown NOW COVERS ───────────────────────────────────────
+//
+// /learning is gated on `learn` (requireLearn in archive-auth.ts). Two things
+// reach it: an explicit `learn` grant, and `crown`.
+//
+// crown was NOT one of them when `learn` was added on 2026-09-09 — it became
+// one later the same day. That was a REVERSAL, not a bug fix: crown is
+// permanently locked to a single account, so covering `learn` widens who can
+// reach the area by nobody, and keeping them apart bought nothing.
+//
+// What the reversal rests on is Clerk state, which no test here can see. These
+// cases pin the new answer; the tier case below them pins the half that did NOT
+// move, which is the half someone would break by conflating the two axes.
+
+describe("learn is reached by an explicit grant and by crown", () => {
+  it("crown implies learn — the reversal, pinned", () => {
+    expect(hasCapability({ capabilities: ["crown"] }, "learn")).toBe(true);
+  });
+
+  it("no tier implies learn — UNCHANGED by the reversal", () => {
+    // crown is a capability someone is granted; king is a tier. Folding learn
+    // into crown says nothing whatever about tiers, and this is what fails if
+    // anyone ever reads the reversal as licence to add a king shortcut.
+    for (const role of ["king", "superexec", "admin", "exec", "hr"]) {
+      expect(hasCapability({ role }, "learn"), `${role} must not imply learn`).toBe(false);
+      expect(hasCapability({ role, capabilities: [] }, "learn")).toBe(false);
+    }
+  });
+
+  it("king + crown reaches it — via the crown, never via the king", () => {
+    expect(hasCapability({ role: "king", capabilities: ["crown"] }, "learn")).toBe(true);
+    // The control that names which half did the work: strip the crown and the
+    // same king is refused. Without this line the assertion above would pass
+    // just as happily under a king-implies-everything shortcut.
+    expect(hasCapability({ role: "king", capabilities: [] }, "learn")).toBe(false);
+  });
+
+  it("the stored grant works on its own, with or without a tier", () => {
+    expect(hasCapability({ capabilities: ["learn"] }, "learn")).toBe(true);
+    expect(hasCapability({ role: null, capabilities: ["learn"] }, "learn")).toBe(true);
+  });
+
+  it("learn is still a leaf — it grants nothing else", () => {
+    // Implication runs one way only. If it ran backwards, granting someone the
+    // learning area would also hand them ultra, plus and add.
+    const learnOnly = { capabilities: ["learn"] };
+    for (const cap of ["ultra", "plus", "add", "crown"] as const) {
+      expect(hasCapability(learnOnly, cap), `learn must not imply ${cap}`).toBe(false);
+    }
+  });
+});
+
 describe("capabilitiesForDisplay — for display, never for a gate", () => {
   it("expands crown into everything it covers", () => {
     expect(capabilitiesForDisplay({ capabilities: ["crown"] })).toEqual([
@@ -201,6 +259,7 @@ describe("capabilitiesForDisplay — for display, never for a gate", () => {
       "plus",
       "add",
       "crown",
+      "learn",
     ]);
   });
 
@@ -208,9 +267,27 @@ describe("capabilitiesForDisplay — for display, never for a gate", () => {
     expect(capabilitiesForDisplay({ capabilities: ["plus"] })).toEqual(["plus"]);
   });
 
+  // Display and gate must agree in BOTH directions. This assertion used to read
+  // `.not.toContain` and was correct then; it inverted with the IMPLIES change
+  // rather than being deleted, because the property it guards — the two never
+  // disagree about /learning — is the same property either way.
+  it("shows learn for a crown holder — display agrees with the gate", () => {
+    expect(capabilitiesForDisplay({ capabilities: ["crown"] })).toContain("learn");
+  });
+
+  it("crown+learn stored together collapses to the same set — expansion is idempotent", () => {
+    expect(capabilitiesForDisplay({ capabilities: ["crown", "learn"] })).toEqual([
+      "ultra",
+      "plus",
+      "add",
+      "crown",
+      "learn",
+    ]);
+  });
+
   it("differs from parseCapabilities on crown, and that is the distinction", () => {
     const meta = { capabilities: ["crown"] };
     expect(parseCapabilities(meta)).toEqual(["crown"]);
-    expect(capabilitiesForDisplay(meta)).toHaveLength(4);
+    expect(capabilitiesForDisplay(meta)).toHaveLength(5);
   });
 });
