@@ -51,9 +51,10 @@
  *   ultra   refresh the newsroom
  *   plus    Archive tracking
  *   add     add and delete entities in the newsroom
- *   crown   implies ultra, plus and add — see IMPLICATION below
+ *   crown   implies ultra, plus, add and learn — see IMPLICATION below
+ *   learn   the /learning area
  */
-export const CAPABILITIES = ["ultra", "plus", "add", "crown"] as const;
+export const CAPABILITIES = ["ultra", "plus", "add", "crown", "learn"] as const;
 
 /**
  * WHAT `crown` COVERS. An IMPLICATION, never an assignment.
@@ -72,9 +73,25 @@ export const CAPABILITIES = ["ultra", "plus", "add", "crown"] as const;
  * three entries nobody wrote would make "what does this user hold" disagree
  * with Clerk — the same half-revoked confusion arriving through the front door.
  * There is a test pinning parseCapabilities(["crown"]) to exactly ["crown"].
+ *
+ * ── `learn` JOINED THIS LIST ON 2026-09-09 — A REVERSAL, NOT A FIX ────────
+ *
+ * When `learn` was added earlier the same day it was deliberately OUTSIDE
+ * crown, on the reasoning that /learning was held by one granted account and no
+ * privilege bundle should reach it. That reasoning was retired, not refuted by
+ * a bug: crown is now confirmed permanently locked to a single account, so
+ * "covered by crown" and "granted to that one account" describe the same set of
+ * people, and keeping them apart bought nothing.
+ *
+ * THE PREMISE IS CLERK STATE, AND NOTHING HERE CHECKS IT. That is the honest
+ * shape of this decision rather than an argument against it. Granting crown to
+ * a second person now also hands them /learning, silently, with no edit to this
+ * file and no test turning red. If crown ever stops being one account's, this
+ * line is the first thing to revisit — and the fix is to pull `learn` back out,
+ * not to add a second gate somewhere else.
  */
 const IMPLIES: Partial<Record<Capability, readonly Capability[]>> = {
-  crown: ["ultra", "plus", "add"],
+  crown: ["ultra", "plus", "add", "learn"],
 };
 
 export type Capability = (typeof CAPABILITIES)[number];
